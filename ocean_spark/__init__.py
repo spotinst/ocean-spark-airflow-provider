@@ -1,6 +1,7 @@
 from typing import Dict
 import ocean_spark.hooks
 import ocean_spark.operators
+import ocean_spark.extra_links
 
 
 def get_provider_info() -> Dict:
@@ -15,4 +16,5 @@ def get_provider_info() -> Dict:
                 "connection-type": "ocean_spark",
             },
         ],
+        "extra-links": ["ocean_spark.extra_links.OceanSparkApplicationOverviewLink"],
     }

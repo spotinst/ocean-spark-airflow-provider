@@ -1,5 +1,6 @@
 from datetime import timedelta
 import json
+from ocean_spark.extra_links import OceanSparkApplicationOverviewLink
 import time
 
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
@@ -12,6 +13,7 @@ from ocean_spark.hooks import (
     OceanSparkHook,
 )
 from ocean_spark.application_state import ApplicationState
+
 
 XCOM_APP_NAME_KEY = "app_name"
 XCOM_APP_PAGE_URL_KEY = "app_page_url"
@@ -37,6 +39,7 @@ class OceanSparkOperator(BaseOperator):
     # "Wave" icon color TODO(crezvoy): check with JY, emily
     ui_color = "#1CB1C2"
     ui_fgcolor = "#fff"
+    operator_extra_links = (OceanSparkApplicationOverviewLink(),)
 
     @apply_defaults
     def __init__(
@@ -49,7 +52,7 @@ class OceanSparkOperator(BaseOperator):
         polling_period_seconds: int = 10,
         retry_limit: int = 3,
         retry_delay: int = 1,
-        do_xcom_push: bool = False,
+        do_xcom_push: bool = True,
         on_spark_submit_callback: Optional[
             Callable[[OceanSparkHook, str, Dict], None]
         ] = None,
@@ -124,6 +127,11 @@ class OceanSparkOperator(BaseOperator):
             self.task_id,
             self.app_name,
         )
+
+    def get_application_overview_url(self) -> str:
+        if self.app_name is not None:
+            return self._get_hook().get_app_page_url(self.app_name)
+        return ""
 
     def _monitor_app(self, hook: OceanSparkHook, context: Dict) -> None:
 
