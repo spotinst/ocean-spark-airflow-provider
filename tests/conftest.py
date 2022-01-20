@@ -22,7 +22,7 @@ def successful_submission(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "POST",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/apps"),
+        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app"),
         status_code=200,
         json={
             "request": {
@@ -283,7 +283,7 @@ def failed_submission(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "POST",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/apps"),
+        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app"),
         status_code=400,
         text="Bad Request",
     )
@@ -294,7 +294,7 @@ def successful_kill(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "DELETE",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/apps"),
+        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app"),
         status_code=200,
         json="",
     )
@@ -305,7 +305,7 @@ def successful_get_app(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "GET",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/apps/.*"),
+        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app/.*"),
         status_code=200,
         json={
             "request": {
@@ -566,7 +566,7 @@ def get_app_completed(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "GET",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/apps/.*"),
+        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app/.*"),
         status_code=200,
         json={
             "request": {

@@ -139,7 +139,7 @@ class OceanSparkHook(BaseHook):
 
     def get_app_page_url(self, app_name: str) -> str:
         return urljoin(
-            FE_HOST, f"/apps/clusters/{self.cluster_id}/apps/{app_name}/overview"
+            FE_HOST, f"apps/clusters/{self.cluster_id}/apps/{app_name}/overview"
         )
 
     @staticmethod
