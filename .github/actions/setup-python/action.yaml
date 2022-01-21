@@ -1,0 +1,45 @@
+name: 'Setup Python'
+description: ''
+
+inputs:
+  path:
+    description: 'Application path'
+    required: true
+  generate-lock:
+    description: 'Generate poetry.lock file'
+    required: false
+    default: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Read target python version
+      run: echo "target_python_version=$(cat ${{ inputs.path }}/.python-version)" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Setup Python ${{ env.target_python_version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: "${{ env.target_python_version }}"
+
+    - name : Install poetry
+      uses: abatilo/actions-poetry@v2.0.0
+      with:
+        poetry-version: "1.1.10"
+
+    - name: generate lockfile
+      run: |
+        if [[ "${{ inputs.generate-lock }}" == "true" ]]; then
+          cd ${{ inputs.path }} && make poetry.lock
+        fi
+      shell: bash
+
+    - name: Cache poetry
+      env:
+        poetry_cache_key: ${{ runner.os }}-${{ env.target_python_version }}-poetry-${{ hashFiles(format('{0}/poetry.lock', inputs.path)) }}
+      uses: actions/cache@v2
+      with:
+        path: ${{ inputs.path }}/.venv
+        key: ${{ env.poetry_cache_key }}
+        restore-keys: |
+          ${{ env.poetry_cache_key }}
