@@ -1,6 +1,12 @@
 from datetime import timedelta
 from typing import Callable, Dict
-from airflow.hooks.base import BaseHook
+from airflow import __version__ as airflow_version
+
+if airflow_version.startswith("1."):
+    from airflow.hooks.base_hook import BaseHook
+else:
+    from airflow.hooks.base import BaseHook
+
 from airflow import __version__
 from airflow.exceptions import AirflowException
 
@@ -50,7 +56,6 @@ class OceanSparkHook(BaseHook):
         self.conn = self.get_connection(ocean_spark_conn_id)
         self.token = self.conn.password
         self.cluster_id = self.conn.host
-        self.account_id = self.conn.login
         self.timeout_seconds = timeout_seconds
         if retry_limit < 1:
             raise ValueError("Retry limit must be greater than equal to 1")
