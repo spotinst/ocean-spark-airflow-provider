@@ -3,7 +3,7 @@ from airflow.operators.ocean_spark import OceanSparkOperator
 
 args = {
     "owner": "airflow",
-    "email": ["airflow@example.com"],
+    "email": [],
     "depends_on_past": False,
     "start_date": utils.dates.days_ago(0, second=1),
 }

@@ -3,7 +3,7 @@ from airflow.operators.ocean_spark import OceanSparkOperator
 
 args = {
     "owner": "airflow",
-    "email": ["airflow@example.com"],
+    "email": [],
     "depends_on_past": False,
     "start_date": utils.dates.days_ago(0, second=1),
 }
@@ -16,12 +16,13 @@ parallel_0_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "mainApplicationFile": "gs://dm-demo-data/code/scala-word-count-assembly-0.0.1.jar",
-        "mainClass": "co.datamechanics.scalawordcount.CountingApp",
-        "arguments": [
-            "gs://dm-demo-data/data/words-dataset/words_*.log",
-            "gs://dm-demo-data/output/dictionary_0_{{ ts_nodash }}.txt",
-        ],
+        "sparkVersion": "3.2.0",
+        "interactive": False,
+        "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
+        "imagePullPolicy": "IfNotPresent",
+        "mainClass": "org.apache.spark.examples.SparkPi",
+        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
+        "arguments": ["10000"],
     },
 )
 
@@ -30,12 +31,13 @@ parallel_1_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "mainApplicationFile": "gs://dm-demo-data/code/scala-word-count-assembly-0.0.1.jar",
-        "mainClass": "co.datamechanics.scalawordcount.CountingApp",
-        "arguments": [
-            "gs://dm-demo-data/data/words-dataset/words_*.log",
-            "gs://dm-demo-data/output/dictionary_1_{{ ts_nodash }}.txt",
-        ],
+        "sparkVersion": "3.2.0",
+        "interactive": False,
+        "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
+        "imagePullPolicy": "IfNotPresent",
+        "mainClass": "org.apache.spark.examples.SparkPi",
+        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
+        "arguments": ["10000"],
     },
 )
 
@@ -44,9 +46,12 @@ spark_pi_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "sparkVersion": "3.0.0",
-        "mainApplicationFile": "local:///opt/spark/examples/jars/spark-examples_2.12-3.0.0.jar",
+        "sparkVersion": "3.2.0",
+        "interactive": False,
+        "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
+        "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
+        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "arguments": ["10000"],
     },
 )
@@ -70,9 +75,12 @@ failed_submission_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "sparkVersion": "3.0.0",
-        "mainApplicationFile": "local:///opt/spark/examples/jars/spark-examples_2.12-3.0.0.jar",
+        "sparkVersion": "3.2.0",
+        "interactive": False,
+        "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
+        "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
+        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "arguments": ["10000"],
         "foo": "bar",  # This field does not exist
     },
