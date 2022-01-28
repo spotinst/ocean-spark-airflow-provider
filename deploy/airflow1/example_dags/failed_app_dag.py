@@ -17,7 +17,6 @@ word_count_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "sparkVersion": "3.2.0",
-        "interactive": False,
         "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
         "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",

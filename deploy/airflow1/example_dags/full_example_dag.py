@@ -17,7 +17,6 @@ parallel_0_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "sparkVersion": "3.2.0",
-        "interactive": False,
         "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
         "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
@@ -32,7 +31,6 @@ parallel_1_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "sparkVersion": "3.2.0",
-        "interactive": False,
         "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
         "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
@@ -47,7 +45,6 @@ spark_pi_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "sparkVersion": "3.2.0",
-        "interactive": False,
         "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
         "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
@@ -62,7 +59,6 @@ failed_app_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "sparkVersion": "3.2.0",
-        "interactive": False,
         "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
         "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
@@ -77,7 +73,6 @@ failed_submission_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "sparkVersion": "3.2.0",
-        "interactive": False,
         "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
         "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
