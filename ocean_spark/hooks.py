@@ -57,6 +57,7 @@ class OceanSparkHook(BaseHook):
         self.token = self.conn.password
         self.cluster_id = self.conn.host
         self.timeout_seconds = timeout_seconds
+        self.account_id = self.conn.login
         if retry_limit < 1:
             raise ValueError("Retry limit must be greater than equal to 1")
         self.retry_limit = retry_limit
@@ -86,6 +87,7 @@ class OceanSparkHook(BaseHook):
                     endpoint,
                     json=payload,
                     headers=headers,
+                    params={"accountId": self.account_id},
                     timeout=self.timeout_seconds,
                 )
                 response.raise_for_status()
@@ -125,39 +127,57 @@ class OceanSparkHook(BaseHook):
     def submit_app(self, payload: Dict) -> str:
         method, path = SUBMIT_APP_ENDPOINT
         response = self._do_api_call(
-            method, path.format(cluster_id=self.cluster_id), payload
+            method,
+            path.format(
+                cluster_id=self.cluster_id,
+                account_id=self.account_id,
+            ),
+            payload,
         )
         return response["response"]["items"][0]["id"]
 
     def get_app(self, app_name: str) -> Dict:
         method, path = GET_APP_ENDPOINT
         response = self._do_api_call(
-            method, path.format(cluster_id=self.cluster_id, app_id=app_name)
+            method,
+            path.format(
+                cluster_id=self.cluster_id,
+                app_id=app_name,
+                account_id=self.account_id,
+            ),
         )
         return response["response"]["items"][0]
 
     def kill_app(self, app_name: str) -> None:
         method, path = DELETE_APP_ENDPOINT
         self._do_api_call(
-            method, path.format(cluster_id=self.cluster_id, app_id=app_name)
+            method,
+            path.format(
+                cluster_id=self.cluster_id,
+                app_id=app_name,
+                account_id=self.account_id,
+            ),
         )
 
     def get_app_page_url(self, app_name: str) -> str:
         return urljoin(
-            FE_HOST, f"apps/clusters/{self.cluster_id}/apps/{app_name}/overview"
+            FE_HOST,
+            f"apps/clusters/{self.cluster_id}/apps/{app_name}/overview&accountId={self.account_id}",
         )
 
     @staticmethod
     def get_ui_field_behaviour() -> Dict:
         return {
-            "hidden_fields": ["port", "extra", "schema", "login"],
+            "hidden_fields": ["port", "extra", "schema"],
             "relabeling": {
                 "password": "API token",
-                "host": "Cluster",
+                "host": "Cluster id",
+                "login": "Account id",
             },
             "placeholders": {
                 "host": "ocean spark cluster id",
-                "password": "ocean API token",
+                "password": "Ocean API token",
+                "login": "Ocean Spot account id",
             },
         }
 
