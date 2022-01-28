@@ -88,6 +88,8 @@ spark_pi_task = OceanSparkOperator(
 )
 ```
 
+more examples are available for [Airflow 1](./deploy/airflow1/example_dags) and [Airflow 2](./deploy/airflow2/dags).
+
 ## Test locally
 
 You can test the plugin locally using the docker compose setup in this
