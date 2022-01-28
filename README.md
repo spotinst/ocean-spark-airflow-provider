@@ -6,9 +6,9 @@ Spark](https://spot.io/products/ocean-apache-spark/).
 
 ## Compatibility
 
-`ocean-spark-airflow-provider` is compatible with both airflow 1 and
-airflow 2. it is detected as an airflow plugin by airflow 1 and up,
-and as a provider by airflow 2.
+`ocean-spark-airflow-provider` is compatible with both Airflow 1 and
+Airflow 2. it is detected as an Airflow plugin by Airflow 1 and up,
+and as a provider by Airflow 2.
 
 
 ## Installation
@@ -92,4 +92,4 @@ spark_pi_task = OceanSparkOperator(
 
 You can test the plugin locally using the docker compose setup in this
 repositor. Run `make serve_airflow2` at the root of the repository to
-launch an instance of airflow 2 with the provider already installed.
+launch an instance of Airflow 2 with the provider already installed.
