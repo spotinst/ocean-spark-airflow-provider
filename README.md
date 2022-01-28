@@ -7,7 +7,7 @@ Spark](https://spot.io/products/ocean-apache-spark/).
 ## Compatibility
 
 `ocean-spark-airflow-provider` is compatible with both airflow 1 and
-airflow 2. it is detected as an airflow plugin by airlfow 1 and up,
+airflow 2. it is detected as an airflow plugin by airflow 1 and up,
 and as a provider by airflow 2.
 
 
@@ -26,7 +26,7 @@ documentation](https://docs.spot.io/ocean-spark/getting-started/?id=get-started-
 ### Setting up the connection
 
 In the connection menu, register a new connection of type **Ocean For
-Spark**, the default connection name is `ocean_spark_default`.you will
+Spark**. The default connection name is `ocean_spark_default`. You will
 need to have:
 
  - The Ocean Spark cluster ID of the cluster you just created (of the
