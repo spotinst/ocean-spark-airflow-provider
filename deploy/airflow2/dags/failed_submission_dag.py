@@ -18,7 +18,7 @@ spark_pi_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "sparkVersion": "3.0.0",
+        "sparkVersion": "3.2.0",
         "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "mainClass": "org.apache.spark.examples.SparkPi",
         "arguments": ["10000"],

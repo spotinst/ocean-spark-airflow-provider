@@ -63,7 +63,7 @@ else:
     # Airflow 2
     from ocean_spark.operators import OceanSparkOperator
     
-# DAG creation ...
+# DAG creation
     
 spark_pi_task = OceanSparkOperator(
     job_id="spark-pi",
@@ -76,18 +76,13 @@ spark_pi_task = OceanSparkOperator(
         "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
         "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
-        "arguments": ["100000"],
+        "arguments": ["10000"],
         "driver": {
             "cores": 1,
-            "coreLimit": "1200m",
-            "memory": "1g",
-            "labels": {"version": "3.0.0"},
         },
         "executor": {
             "cores": 2,
-            "memory": "1g",
-            "labels": {"version": "3.0.0"},
-            "instances": 2,
+            "instances": 1,
         },
     },
 )
@@ -98,5 +93,5 @@ more examples are available for [Airflow 1](./deploy/airflow1/example_dags) and 
 ## Test locally
 
 You can test the plugin locally using the docker compose setup in this
-repositor. Run `make serve_airflow2` at the root of the repository to
+repository. Run `make serve_airflow2` at the root of the repository to
 launch an instance of Airflow 2 with the provider already installed.

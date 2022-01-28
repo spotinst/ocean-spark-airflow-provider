@@ -19,11 +19,8 @@ parallel_0_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
-        "mainClass": "co.datamechanics.scalawordcount.CountingApp",
-        "arguments": [
-            "gs://dm-demo-data/data/words-dataset/words_*.log",
-            "gs://dm-demo-data/output/dictionary_0_{{ ts_nodash }}.txt",
-        ],
+        "mainClass": "org.apache.spark.examples.SparkPi",
+        "arguments": ["10000"],
     },
 )
 
@@ -33,11 +30,8 @@ parallel_1_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "mainApplicationFile": "gs://dm-demo-data/code/scala-word-count-assembly-0.0.1.jar",
-        "mainClass": "co.datamechanics.scalawordcount.CountingApp",
-        "arguments": [
-            "gs://dm-demo-data/data/words-dataset/words_*.log",
-            "gs://dm-demo-data/output/dictionary_1_{{ ts_nodash }}.txt",
-        ],
+        "mainClass": "org.apache.spark.examples.SparkPi",
+        "arguments": ["10000"],
     },
 )
 
@@ -46,7 +40,7 @@ spark_pi_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "sparkVersion": "3.0.0",
+        "sparkVersion": "3.2.0",
         "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "mainClass": "org.apache.spark.examples.SparkPi",
         "arguments": ["10000"],
@@ -59,11 +53,8 @@ failed_app_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "mainApplicationFile": "local:///opt/spark/FOO/examples/jars/examples.jar",  # This path does not exist
-        "mainClass": "co.datamechanics.scalawordcount.CountingApp",
-        "arguments": [
-            "gs://dm-demo-data/data/words-dataset/words_*.log",
-            "gs://dm-demo-data/output/dictionary_f_{{ ts_nodash }}.txt",
-        ],
+        "mainClass": "org.apache.spark.examples.SparkPi",
+        "arguments": ["10000"],
     },
 )
 
@@ -72,7 +63,7 @@ failed_submission_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "sparkVersion": "3.0.0",
+        "sparkVersion": "3.2.0",
         "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "mainClass": "org.apache.spark.examples.SparkPi",
         "arguments": ["10000"],

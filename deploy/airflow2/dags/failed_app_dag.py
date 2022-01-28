@@ -18,11 +18,9 @@ word_count_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "mainApplicationFile": "gs://dm-demo-data/FOO/scala-word-count-assembly-0.0.1.jar",  # This path does not exist
-        "mainClass": "co.datamechanics.scalawordcount.CountingApp",
-        "arguments": [
-            "gs://dm-demo-data/data/words-dataset/words_*.log",
-            "gs://dm-demo-data/output/dictionary_{{ ts_nodash }}.txt",
-        ],
+        "sparkVersion": "3.2.0",
+        "mainApplicationFile": "local:///opt/spark/examples/FOO/jars/examples.jar",  # This path does not exist
+        "mainClass": "org.apache.spark.examples.SparkPi",
+        "arguments": ["10000"],
     },
 )

@@ -21,7 +21,7 @@ word_count_task = OceanSparkOperator(
         "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
         "mainApplicationFile": "local:///opt/spark/examples/FOO/jars/examples.jar",  # This path does not exist
-        "arguments": ["1000000"],
+        "arguments": ["10000"],
         "type": "Scala",
     },
 )
