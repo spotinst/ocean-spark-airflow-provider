@@ -46,6 +46,12 @@ The **Ocean For Spark** connection type is not available for Airflow
 1, instead create an **HTTP** connection and fill your cluster id as
 **host** your API token as **password**.
 
+You will need to create a separate connection for every Ocean Spark
+cluster that you plan to use with Airflow.  In the
+`OceanSparkOperator`, you can select which Ocean Spark connection to
+use with the `connection_name` argument (defaults to
+`ocean_spark_default`).
+
 ### Using the operator
 
 ```python
