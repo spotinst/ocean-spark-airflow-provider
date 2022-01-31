@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-PROJECT_VERSION=0.0.1
+PROJECT_VERSION=0.1.0
 SRCS=$(shell git ls-files -c)
 DEPS=$(SRCS) pyproject.toml
 PROJECT_NAME=ocean-spark-airflow-provider
@@ -122,6 +122,11 @@ clean_airflow:
 	docker-compose down --volumes --remove-orphans
 	cd deploy/airflow2; \
 	docker-compose down --volumes --remove-orphans
+
+##@ Publish
+.PHONY: publish
+publish: dist/$(SDIST_NAME) dist/$(WHEEL_NAME)
+	poetry publish
 
 
 .PHONY: clean
