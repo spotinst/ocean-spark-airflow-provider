@@ -13,7 +13,6 @@ and as a provider by Airflow 2.
 
 ## Installation
 
-TODO(crezvoy): setup pypi repo
 ```
 pip install ocean-spark-airflow-provider
 ```
