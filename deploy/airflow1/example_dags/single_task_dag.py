@@ -3,7 +3,7 @@ from airflow.operators.ocean_spark import OceanSparkOperator
 
 args = {
     "owner": "airflow",
-    "email": ["airflow@example.com"],
+    "email": [],
     "depends_on_past": False,
     "start_date": utils.dates.days_ago(0, second=1),
 }
@@ -16,9 +16,11 @@ spark_pi_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "sparkVersion": "3.0.0",
-        "mainApplicationFile": "local:///opt/spark/examples/jars/spark-examples_2.12-3.0.0.jar",
+        "sparkVersion": "3.2.0",
+        "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
+        "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
+        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "arguments": ["10000"],
     },
 )

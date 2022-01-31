@@ -3,7 +3,7 @@ from airflow.operators.ocean_spark import OceanSparkOperator
 
 args = {
     "owner": "airflow",
-    "email": ["airflow@example.com"],
+    "email": [],
     "depends_on_past": False,
     "start_date": utils.dates.days_ago(0, second=1),
 }
@@ -16,11 +16,12 @@ word_count_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "mainApplicationFile": "gs://dm-demo-data/FOO/scala-word-count-assembly-0.0.1.jar",  # This path does not exist
-        "mainClass": "co.datamechanics.scalawordcount.CountingApp",
-        "arguments": [
-            "gs://dm-demo-data/data/words-dataset/words_*.log",
-            "gs://dm-demo-data/output/dictionary_{{ ts_nodash }}.txt",
-        ],
+        "sparkVersion": "3.2.0",
+        "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
+        "imagePullPolicy": "IfNotPresent",
+        "mainClass": "org.apache.spark.examples.SparkPi",
+        "mainApplicationFile": "local:///opt/spark/examples/FOO/jars/examples.jar",  # This path does not exist
+        "arguments": ["10000"],
+        "type": "Scala",
     },
 )

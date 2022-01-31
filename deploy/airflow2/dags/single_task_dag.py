@@ -19,23 +19,16 @@ spark_pi_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "sparkVersion": "3.2.0",
-        "interactive": False,
         "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
         "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
         "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
-        "arguments": ["1000000"],
+        "arguments": ["10000"],
         "driver": {
             "cores": 1,
-            "coreLimit": "1200m",
-            "memory": "1g",
-            "labels": {"version": "3.0.0"},
         },
         "executor": {
-            "cores": 2,
-            "memory": "1g",
-            "labels": {"version": "3.0.0"},
-            "instances": 2,
+            "cores": 1,
         },
     },
 )

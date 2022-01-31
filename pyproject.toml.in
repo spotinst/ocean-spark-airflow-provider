@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "@PROJECT_NAME@"
 version = "@PROJECT_VERSION@"
-description = "TODO(crezvoy): add description"
-authors = ["Ocean for Spark authors <some.mail@netapp.com>" ]  #"TODO(crezvoy): add authors"
+description = "Apache Airflow connector for Ocean Spark"
+authors = ["Ocean for Spark authors <clement.rezvoy@netapp.com>" ]
 license = "Apache License 2.0"
 readme = "README.md"
-homepage = "TODO(crezvoy): gihub repo url"
-repository = "TODO(crezvoy): gihub repo url"
+homepage = "https://spot.io/products/ocean-apache-spark/"
+repository = "https://github.com/spotinst/ocean-spark-airflow-provider"
 keywords = ["airflow", "provider", "spark", "ocean"]
 classifiers = [
             "Development Status :: 4 - Beta",
