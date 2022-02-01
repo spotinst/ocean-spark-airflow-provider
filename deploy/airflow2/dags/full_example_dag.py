@@ -18,9 +18,18 @@ parallel_0_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
+        "sparkVersion": "3.2.0",
+        "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
+        "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
+        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "arguments": ["10000"],
+        "driver": {
+            "cores": 1,
+        },
+        "executor": {
+            "cores": 1,
+        },
     },
 )
 
@@ -29,9 +38,18 @@ parallel_1_task = OceanSparkOperator(
     dag=dag,
     config_overrides={
         "type": "Scala",
-        "mainApplicationFile": "gs://dm-demo-data/code/scala-word-count-assembly-0.0.1.jar",
+        "sparkVersion": "3.2.0",
+        "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
+        "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
+        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "arguments": ["10000"],
+        "driver": {
+            "cores": 1,
+        },
+        "executor": {
+            "cores": 1,
+        },
     },
 )
 
@@ -41,9 +59,17 @@ spark_pi_task = OceanSparkOperator(
     config_overrides={
         "type": "Scala",
         "sparkVersion": "3.2.0",
-        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
+        "image": "gcr.io/datamechanics/spark:platform-3.2-latest",
+        "imagePullPolicy": "IfNotPresent",
         "mainClass": "org.apache.spark.examples.SparkPi",
+        "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "arguments": ["10000"],
+        "driver": {
+            "cores": 1,
+        },
+        "executor": {
+            "cores": 1,
+        },
     },
 )
 
