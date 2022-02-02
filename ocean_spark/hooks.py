@@ -136,33 +136,33 @@ class OceanSparkHook(BaseHook):
         )
         return response["response"]["items"][0]["id"]
 
-    def get_app(self, app_name: str) -> Dict:
+    def get_app(self, app_id: str) -> Dict:
         method, path = GET_APP_ENDPOINT
         response = self._do_api_call(
             method,
             path.format(
                 cluster_id=self.cluster_id,
-                app_id=app_name,
+                app_id=app_id,
                 account_id=self.account_id,
             ),
         )
         return response["response"]["items"][0]
 
-    def kill_app(self, app_name: str) -> None:
+    def kill_app(self, app_id: str) -> None:
         method, path = DELETE_APP_ENDPOINT
         self._do_api_call(
             method,
             path.format(
                 cluster_id=self.cluster_id,
-                app_id=app_name,
+                app_id=app_id,
                 account_id=self.account_id,
             ),
         )
 
-    def get_app_page_url(self, app_name: str) -> str:
+    def get_app_page_url(self, app_id: str) -> str:
         return urljoin(
             FE_HOST,
-            f"apps/clusters/{self.cluster_id}/apps/{app_name}/overview&accountId={self.account_id}",
+            f"apps/clusters/{self.cluster_id}/apps/{app_id}/overview&accountId={self.account_id}",
         )
 
     @staticmethod

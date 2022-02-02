@@ -8,6 +8,6 @@ def test_on_execute(
     get_connection_mock: None,
 ) -> None:
     operator = OceanSparkOperator(
-        job_name="test-job", task_id="test-task", do_xcom_push=False
+        job_id="test-job", task_id="test-task", do_xcom_push=False
     )
     operator.execute(context={})

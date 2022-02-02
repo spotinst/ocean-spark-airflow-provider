@@ -6,6 +6,10 @@ import ocean_spark.extra_links
 
 def get_provider_info() -> Dict:
     return {
+        "versions": [
+            "0.1.1",
+            "0.1.0",
+        ],
         "package-name": "ocean-spark-airflow-provider",
         "name": "Ocean for Spark Airflow Provider",
         "description": "TODO(crezvoy): add description",

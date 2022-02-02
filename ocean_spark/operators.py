@@ -15,7 +15,7 @@ from ocean_spark.hooks import (
 from ocean_spark.application_state import ApplicationState
 
 
-XCOM_APP_NAME_KEY = "app_name"
+XCOM_APP_ID_KEY = "app_id"
 XCOM_APP_PAGE_URL_KEY = "app_page_url"
 
 
@@ -30,9 +30,9 @@ class OceanSparkOperator(BaseOperator):
 
     # Used in airflow.models.BaseOperator
     template_fields = (
-        "app_name",
-        "job_name",
-        "config_template_name",
+        "app_id",
+        "job_id",
+        "config_template_id",
         "config_overrides",
     )
     template_ext = (".json",)
@@ -44,9 +44,9 @@ class OceanSparkOperator(BaseOperator):
     @apply_defaults
     def __init__(
         self,
-        job_name: str = None,
-        app_name: Optional[str] = None,
-        config_template_name: Optional[str] = None,
+        job_id: str = None,
+        app_id: Optional[str] = None,
+        config_template_id: Optional[str] = None,
         config_overrides: Optional[Union[Dict, str]] = None,
         conn_id: str = DEFAULT_CONN_NAME,
         polling_period_seconds: int = 10,
@@ -67,10 +67,10 @@ class OceanSparkOperator(BaseOperator):
         self.polling_period_seconds = polling_period_seconds
         self.retry_limit = retry_limit
         self.retry_delay = timedelta(seconds=retry_delay)
-        self.app_name: Optional[str] = None  # will be set from the API response
-        self._payload_app_name: Optional[str] = app_name
-        self.job_name: Optional[str] = job_name
-        self.config_template_name: Optional[str] = config_template_name
+        self.app_id: Optional[str] = None  # will be set from the API response
+        self._payload_app_id: Optional[str] = app_id
+        self.job_id: Optional[str] = job_id
+        self.config_template_id: Optional[str] = config_template_id
         self.config_overrides: Optional[Union[Dict, str]] = config_overrides
         self.do_xcom_push: bool = do_xcom_push
         self.on_spark_submit_callback: Optional[
@@ -78,11 +78,11 @@ class OceanSparkOperator(BaseOperator):
         ] = on_spark_submit_callback
         self.payload: Dict = {}
 
-        if self.job_name is None:
+        if self.job_id is None:
             self.log.info(
-                "Setting job name to task id because `job_name` argument is not specified"
+                "Setting job name to task id because `job_id` argument is not specified"
             )
-            self.job_name = kwargs["task_id"]
+            self.job_id = kwargs["task_id"]
 
     def _get_hook(self) -> OceanSparkHook:
         return OceanSparkHook(
@@ -92,11 +92,11 @@ class OceanSparkOperator(BaseOperator):
         )
 
     def _build_payload(self) -> None:
-        self.payload["jobId"] = self.job_name
-        if self._payload_app_name is not None:
-            self.payload["appId"] = self._payload_app_name
-        if self.config_template_name is not None:
-            self.payload["configTemplateId"] = self.config_template_name
+        self.payload["jobId"] = self.job_id
+        if self._payload_app_id is not None:
+            self.payload["appId"] = self._payload_app_id
+        if self.config_template_id is not None:
+            self.payload["configTemplateId"] = self.config_template_id
 
         # templated config overrides dict pulled from xcom is a json str
         if self.config_overrides is not None:
@@ -110,43 +110,43 @@ class OceanSparkOperator(BaseOperator):
     def execute(self, context: Dict) -> None:
         self._build_payload()
         hook = self._get_hook()
-        self.app_name = hook.submit_app(self.payload)
+        self.app_id = hook.submit_app(self.payload)
         if self.on_spark_submit_callback:
             try:
-                self.on_spark_submit_callback(hook, self.app_name, context)
+                self.on_spark_submit_callback(hook, self.app_id, context)
             except Exception as err:
                 self.log.exception(err)
         self._monitor_app(hook, context)
 
     def on_kill(self) -> None:
-        if self.app_name is not None:
+        if self.app_id is not None:
             hook = self._get_hook()
-            hook.kill_app(self.app_name)
+            hook.kill_app(self.app_id)
         self.log.info(
             "Task: %s with app name: %s was requested to be cancelled.",
             self.task_id,
-            self.app_name,
+            self.app_id,
         )
 
     def get_application_overview_url(self) -> str:
-        if self.app_name is not None:
-            return self._get_hook().get_app_page_url(self.app_name)
+        if self.app_id is not None:
+            return self._get_hook().get_app_page_url(self.app_id)
         return ""
 
     def _monitor_app(self, hook: OceanSparkHook, context: Dict) -> None:
 
-        if self.app_name is None:
+        if self.app_id is None:
             # app not launched
             return
         if self.do_xcom_push:
-            context["ti"].xcom_push(key=XCOM_APP_NAME_KEY, value=self.app_name)
-        self.log.info("App submitted with app_name: %s", self.app_name)
-        app_page_url = hook.get_app_page_url(self.app_name)
+            context["ti"].xcom_push(key=XCOM_APP_ID_KEY, value=self.app_id)
+        self.log.info("App submitted with app_id: %s", self.app_id)
+        app_page_url = hook.get_app_page_url(self.app_id)
         if self.do_xcom_push:
             context["ti"].xcom_push(key=XCOM_APP_PAGE_URL_KEY, value=app_page_url)
 
         while True:
-            app = hook.get_app(self.app_name)
+            app = hook.get_app(self.app_id)
             app_state = _get_state_from_app(app)
             self.log.info("View app details at %s", app_page_url)
             if app_state.is_terminal:

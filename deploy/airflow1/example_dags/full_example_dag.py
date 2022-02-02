@@ -22,6 +22,12 @@ parallel_0_task = OceanSparkOperator(
         "mainClass": "org.apache.spark.examples.SparkPi",
         "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "arguments": ["10000"],
+        "driver": {
+            "cores": 1,
+        },
+        "executor": {
+            "cores": 1,
+        },
     },
 )
 
@@ -36,6 +42,12 @@ parallel_1_task = OceanSparkOperator(
         "mainClass": "org.apache.spark.examples.SparkPi",
         "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "arguments": ["10000"],
+        "driver": {
+            "cores": 1,
+        },
+        "executor": {
+            "cores": 1,
+        },
     },
 )
 
@@ -50,6 +62,12 @@ spark_pi_task = OceanSparkOperator(
         "mainClass": "org.apache.spark.examples.SparkPi",
         "mainApplicationFile": "local:///opt/spark/examples/jars/examples.jar",
         "arguments": ["10000"],
+        "driver": {
+            "cores": 1,
+        },
+        "executor": {
+            "cores": 1,
+        },
     },
 )
 
