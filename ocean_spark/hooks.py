@@ -43,7 +43,7 @@ class OceanSparkHook(BaseHook):
     conn_name_attr: str = "ocean_spark_conn_id"
     default_conn_name: str = "ocean_spark_default"
     conn_type: str = "ocean_spark"
-    hook_name: str = "Ocean For Spark"
+    hook_name: str = "Ocean for Apache Spark"
 
     def __init__(
         self,

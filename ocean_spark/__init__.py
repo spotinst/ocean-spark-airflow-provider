@@ -12,7 +12,7 @@ def get_provider_info() -> Dict:
         ],
         "package-name": "ocean-spark-airflow-provider",
         "name": "Ocean for Spark Airflow Provider",
-        "description": "TODO(crezvoy): add description",
+        "description": "Apache Airflow connector for Ocean for Apache Spark",
         "hook-class-names": ["ocean_spark.hooks.OceanSparkHook"],
         "connection-types": [
             {
