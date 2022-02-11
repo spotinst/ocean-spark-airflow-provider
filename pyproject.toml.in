@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "@PROJECT_NAME@"
 version = "@PROJECT_VERSION@"
-description = "Apache Airflow connector for Ocean Spark"
-authors = ["Ocean for Spark authors <clement.rezvoy@netapp.com>" ]
+description = "Apache Airflow connector for Ocean for Apache Spark"
+authors = ["Ocean for Apache Spark authors <clement.rezvoy@netapp.com>" ]
 license = "Apache License 2.0"
 readme = "README.md"
 homepage = "https://spot.io/products/ocean-apache-spark/"

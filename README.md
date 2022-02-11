@@ -24,7 +24,7 @@ documentation](https://docs.spot.io/ocean-spark/getting-started/?id=get-started-
 
 ### Setting up the connection
 
-In the connection menu, register a new connection of type **Ocean For
+In the connection menu, register a new connection of type **Ocean for
 Apache Spark**. The default connection name is `ocean_spark_default`. You will
 need to have:
 
@@ -40,7 +40,7 @@ need to have:
  
 ![connection setup dialog](./images/connection_setup.png) 
 
-The **Ocean For Apache Spark** connection type is not available for Airflow
+The **Ocean for Apache Spark** connection type is not available for Airflow
 1, instead create an **HTTP** connection and fill your cluster id as
 **host**, and your API token as **password**.
 
