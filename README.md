@@ -56,7 +56,7 @@ can easily target an environment by picking the correct Airflow connection.
 
 ```python
 from airflow import __version__ as airflow_version
-if airflow_version.starts_with("1."):
+if airflow_version.startswith("1."):
     # Airflow 1, import as plugin
     from airflow.operators.ocean_spark import OceanSparkOperator
 else:
