@@ -2,16 +2,21 @@ from datetime import datetime
 from typing import cast
 from airflow.models.baseoperator import BaseOperator, BaseOperatorLink
 from airflow.models.xcom import XCom
-from airflow.plugins_manager import AirflowPlugin
+
+import pendulum
+
+APP_PAGE_URL_KEY: str = "app_page_url"
 
 
 class OceanSparkApplicationOverviewLink(BaseOperatorLink):
-    name = "Application Overview"
+    name: str = "Application Overview"
 
     def get_link(self, operator: BaseOperator, dttm: datetime) -> str:
         url = XCom.get_one(
-            execution_date=dttm,
+            execution_date=pendulum.instance(dttm),
             task_id=operator.task_id,
-            key="app_page_url",
+            key=APP_PAGE_URL_KEY,
         )
-        return url
+        if url is None:
+            return ""
+        return cast(str, url)
