@@ -183,6 +183,8 @@ class OceanSparkHook(BaseHook):
 
 
 def _retryable_error(exception: requests_exceptions.RequestException) -> bool:
+    # Since the Spot API masks all internal errors as 400s, the hook must retry
+    # even on 4xx errors.
     return isinstance(
         exception, (requests_exceptions.ConnectionError, requests_exceptions.Timeout)
-    ) or (exception.response is not None and exception.response.status_code >= 500)
+    ) or (exception.response is not None and exception.response.status_code >= 400)

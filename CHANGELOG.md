@@ -1,3 +1,4 @@
+- Retry on 4xx errors
 
 # v0.1.2 
 - Documentation and wording fixes
@@ -9,4 +10,3 @@
 - Add link to the application overview in the task
 - CI workflow
 - Initial documentation
-
