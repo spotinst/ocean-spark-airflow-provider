@@ -7,6 +7,7 @@ import ocean_spark.extra_links
 def get_provider_info() -> Dict:
     return {
         "versions": [
+            "0.1.3",
             "0.1.2",
             "0.1.1",
             "0.1.0",
