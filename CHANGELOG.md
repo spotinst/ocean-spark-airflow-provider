@@ -1,4 +1,7 @@
+# v0.1.3
 - Retry on 4xx errors
+- Fix mypy errors
+- Fix documentation code sample
 
 # v0.1.2 
 - Documentation and wording fixes
