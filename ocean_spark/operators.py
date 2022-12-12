@@ -49,7 +49,7 @@ class OceanSparkOperator(BaseOperator):
         conn_id: str = DEFAULT_CONN_NAME,
         polling_period_seconds: int = 10,
         retry_limit: int = 3,
-        retry_delay: int = 1,
+        retry_delay: timedelta = timedelta(seconds=1),
         do_xcom_push: bool = True,
         on_spark_submit_callback: Optional[
             Callable[[OceanSparkHook, str, Dict], None]
@@ -64,7 +64,7 @@ class OceanSparkOperator(BaseOperator):
         self.conn_id = conn_id
         self.polling_period_seconds = polling_period_seconds
         self.retry_limit = retry_limit
-        self.retry_delay = timedelta(seconds=retry_delay)
+        self.retry_delay = retry_delay
         self.app_id: Optional[str] = None  # will be set from the API response
         self._payload_app_id: Optional[str] = app_id
         self.job_id: Optional[str] = job_id
