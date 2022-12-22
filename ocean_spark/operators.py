@@ -64,7 +64,10 @@ class OceanSparkOperator(BaseOperator):
         self.conn_id = conn_id
         self.polling_period_seconds = polling_period_seconds
         self.retry_limit = retry_limit
-        self.retry_delay = retry_delay
+        self.retry_delay = (
+            retry_delay if isinstance(retry_delay, timedelta)
+            else timedelta(seconds=retry_delay)
+        )
         self.app_id: Optional[str] = None  # will be set from the API response
         self._payload_app_id: Optional[str] = app_id
         self.job_id: Optional[str] = job_id
