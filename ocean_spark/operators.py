@@ -51,7 +51,7 @@ class OceanSparkOperator(BaseOperator):
         conn_id: str = DEFAULT_CONN_NAME,
         polling_period_seconds: int = 10,
         retry_limit: int = 3,
-        retry_delay: timedelta = timedelta(seconds=1),
+        retry_delay: Union[timedelta, int] = timedelta(seconds=1),
         do_xcom_push: bool = True,
         on_spark_submit_callback: Optional[
             Callable[[OceanSparkHook, str, Dict], None]
