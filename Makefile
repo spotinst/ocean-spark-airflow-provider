@@ -86,10 +86,10 @@ dist/$(WHEEL_NAME): $(DEPS)
 wheel: dist/$(WHEEL_NAME)
 
 .PHONY: dist
-dist: dist/$(WHEEL_NAME)
+dist: dist/$(WHEEL_NAME) ## Build distribution
 
-.PHONY: build 
-build: sdist wheel
+.PHONY: build
+build: sdist wheel ## Build package
 
 ##@ Local deployment 
 
@@ -104,19 +104,19 @@ check_docker_compose:
 	fi
 
 .PHONY: serve_airflow1
-serve_airflow1: dist/$(WHEEL_NAME) check_docker_compose
+serve_airflow1: dist/$(WHEEL_NAME) check_docker_compose ## Run airflow1 locally
 	@echo "[RUN] docker-compose up"
 	cd deploy/airflow1; \
 	docker-compose -p airflow1 up --force-recreate --build --remove-orphans
 
 .PHONY: serve_airflow2
-serve_airflow2: dist/$(WHEEL_NAME) check_docker_compose
+serve_airflow2: dist/$(WHEEL_NAME) check_docker_compose ## Run airflow2 locally
 	@echo "[RUN] docker-compose up"
 	cd deploy/airflow2; \
 	docker-compose -p airflow2 up --force-recreate --build --remove-orphans
 
 .PHONY: clean_airflow
-clean_airflow:
+clean_airflow: ## Clean up all airflow resources
 	@echo "[RUN] docker-compose clean"
 	cd deploy/airflow1; \
 	docker-compose down --volumes --remove-orphans
@@ -125,7 +125,7 @@ clean_airflow:
 
 ##@ Publish
 .PHONY: publish
-publish: dist/$(SDIST_NAME) dist/$(WHEEL_NAME)
+publish: dist/$(SDIST_NAME) dist/$(WHEEL_NAME) ## Publish packages
 	poetry publish
 
 

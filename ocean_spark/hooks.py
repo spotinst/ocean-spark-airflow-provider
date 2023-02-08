@@ -1,5 +1,7 @@
+import json
 from datetime import timedelta
-from typing import Callable, Dict
+from typing import Callable, Dict, Any
+
 from airflow import __version__ as airflow_version
 
 if airflow_version.startswith("1."):
@@ -16,9 +18,10 @@ import requests
 import time
 from requests import exceptions as requests_exceptions
 
+from ocean_spark.response import ApiResponse
+
 API_HOST = "https://api.spotinst.io/ocean/spark/"
 FE_HOST = "https://console.spotinst.com/ocean/spark/"
-
 
 SUBMIT_APP_ENDPOINT = (
     requests.post,
@@ -32,7 +35,6 @@ DELETE_APP_ENDPOINT = (
     requests.delete,
     urljoin(API_HOST, "cluster/{cluster_id}/app/{app_id}"),
 )
-
 
 USER_AGENT_HEADER = {"user-agent": "airflow-{v}".format(v=__version__)}
 
@@ -52,6 +54,7 @@ class OceanSparkHook(BaseHook):
         retry_limit: int = 3,
         retry_delay: timedelta = timedelta(seconds=1.0),
     ):
+        super().__init__()
         self.conn_id = ocean_spark_conn_id
         self.conn = self.get_connection(ocean_spark_conn_id)
         self.token = self.conn.password
@@ -92,37 +95,38 @@ class OceanSparkHook(BaseHook):
                 )
                 response.raise_for_status()
                 return response.json()
+            except (
+                requests_exceptions.ConnectionError,
+                requests_exceptions.Timeout,
+            ) as e:
+                self.log.error(
+                    "Request attempt [%d] to the Ocean Spark API failed with reason: %s",
+                    attempt_num,
+                    str(e),
+                )
             except requests_exceptions.RequestException as e:
-                if not _retryable_error(e):
-                    # In this case, the user probably made a mistake.
-                    # Don't retry.
-                    raise AirflowException(
-                        "Response: {0}, Status Code: {1}".format(
-                            e.response.content, e.response.status_code
-                        )
-                    )
-
-                self._log_request_error(attempt_num, e)
+                msg = self._construct_error_message(e)
+                self.log.error(msg)
+                raise AirflowException(msg)
 
             if attempt_num == self.retry_limit:
                 raise AirflowException(
-                    (
-                        "API requests to Data Mechanics failed {} times. "
-                        + "Giving up."
-                    ).format(self.retry_limit)
+                    f"Request to Ocean Spark API failed {self.retry_limit} times. Giving up."
                 )
 
             attempt_num += 1
             time.sleep(self.retry_delay.total_seconds())
 
-    def _log_request_error(
-        self, attempt_num: int, error: requests_exceptions.RequestException
-    ) -> None:
-        self.log.error(
-            "Attempt %s API Request to Data Mechanics failed with reason: %s",
-            attempt_num,
-            error,
-        )
+    @staticmethod
+    def _construct_error_message(ex: requests_exceptions.RequestException) -> str:
+        try:
+            api_response: ApiResponse = json.loads(ex.response.content)
+            request_id = api_response["request"]["id"]
+            errors = api_response["response"]["errors"]
+            status_code = api_response["response"]["status"]["code"]
+            return f"Request '{request_id}' to the Ocean Spark API failed with status '{status_code}' and errors: {errors}"
+        except ValueError:
+            return f"Request to the Ocean Spark API failed with status '{ex.response.status_code}' and error {ex.response.content}"
 
     def submit_app(self, payload: Dict) -> str:
         method, path = SUBMIT_APP_ENDPOINT
@@ -181,10 +185,5 @@ class OceanSparkHook(BaseHook):
             },
         }
 
-
-def _retryable_error(exception: requests_exceptions.RequestException) -> bool:
-    # Since the Spot API masks all internal errors as 400s, the hook must retry
-    # even on 4xx errors.
-    return isinstance(
-        exception, (requests_exceptions.ConnectionError, requests_exceptions.Timeout)
-    ) or (exception.response is not None and exception.response.status_code >= 400)
+    def get_conn(self) -> Any:
+        pass
