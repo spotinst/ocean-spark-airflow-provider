@@ -250,8 +250,8 @@ def successful_submission(requests_mock: RequestsMocker) -> None:
                         "startedAt": "2021-11-18T17:09:37+00:00",
                         "endedAt": "2021-11-18T17:09:37+00:00",
                         "log": {
-                            "logsStreamUrl": "/ocean/spark/cluster/osc-20fac3f1/app/daily-reporting-2021-08-18/logs/live",
-                            "kubeEventsStreamUrl": "/ocean/spark/cluster/osc-20fac3f1/app/daily-reporting-2021-08-18/kubeEvents/live",
+                            "logsStreamUrl": "/ocean/spark/cluster/cluster-id/app/daily-reporting-2021-08-18/logs/live",
+                            "kubeEventsStreamUrl": "/ocean/spark/cluster/cluster-id/app/daily-reporting-2021-08-18/kubeEvents/live",
                         },
                         "metrics": {
                             "cost": {
@@ -285,7 +285,24 @@ def failed_submission(requests_mock: RequestsMocker) -> None:
         "POST",
         re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app"),
         status_code=400,
-        text="Bad Request",
+        json={
+            "request": {
+                "id": "f60f8ffe-e9d9-4636-95d1-7c96dc71ce7d",
+                "url": "/ocean/spark/cluster/cluster-id/app/?accountId=account",
+                "method": "POST",
+                "timestamp": "2023-02-08T10:55:18.537Z",
+            },
+            "response": {
+                "status": {"code": 404, "message": "Not Found"},
+                "errors": [
+                    {
+                        "code": "RESOURCE_NOT_FOUND",
+                        "message": "Couldn't find cluster with ID: cluster-id",
+                    }
+                ],
+                "count": 1,
+            },
+        },
     )
 
 
@@ -533,8 +550,8 @@ def successful_get_app(requests_mock: RequestsMocker) -> None:
                         "startedAt": "2021-11-18T17:09:37+00:00",
                         "endedAt": "2021-11-18T17:09:37+00:00",
                         "log": {
-                            "logsStreamUrl": "/ocean/spark/cluster/osc-20fac3f1/app/daily-reporting-2021-08-18/logs/live",
-                            "kubeEventsStreamUrl": "/ocean/spark/cluster/osc-20fac3f1/app/daily-reporting-2021-08-18/kubeEvents/live",
+                            "logsStreamUrl": "/ocean/spark/cluster/cluster-id/app/daily-reporting-2021-08-18/logs/live",
+                            "kubeEventsStreamUrl": "/ocean/spark/cluster/cluster-id/app/daily-reporting-2021-08-18/kubeEvents/live",
                         },
                         "metrics": {
                             "cost": {
@@ -794,8 +811,8 @@ def get_app_completed(requests_mock: RequestsMocker) -> None:
                         "startedAt": "2021-11-18T17:09:37+00:00",
                         "endedAt": "2021-11-18T17:09:37+00:00",
                         "log": {
-                            "logsStreamUrl": "/ocean/spark/cluster/osc-20fac3f1/app/daily-reporting-2021-08-18/logs/live",
-                            "kubeEventsStreamUrl": "/ocean/spark/cluster/osc-20fac3f1/app/daily-reporting-2021-08-18/kubeEvents/live",
+                            "logsStreamUrl": "/ocean/spark/cluster/cluster-id/app/daily-reporting-2021-08-18/logs/live",
+                            "kubeEventsStreamUrl": "/ocean/spark/cluster/cluster-id/app/daily-reporting-2021-08-18/kubeEvents/live",
                         },
                         "metrics": {
                             "cost": {

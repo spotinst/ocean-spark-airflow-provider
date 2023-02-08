@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
 
 from airflow.exceptions import AirflowException
 from airflow.models import BaseOperator
-from airflow.utils.decorators import apply_defaults
 from ocean_spark.hooks import (
     DEFAULT_CONN_NAME,
     OceanSparkHook,
@@ -41,7 +40,6 @@ class OceanSparkOperator(BaseOperator):
     ui_fgcolor = "#fff"
     operator_extra_links = (OceanSparkApplicationOverviewLink(),)
 
-    @apply_defaults
     def __init__(
         self,
         job_id: str = None,
