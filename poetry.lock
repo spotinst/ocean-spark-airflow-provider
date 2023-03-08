@@ -2088,14 +2088,14 @@ dev = ["pre-commit", "pytest-asyncio", "tox"]
 
 [[package]]
 name = "python-daemon"
-version = "3.0.0"
+version = "2.3.2"
 description = "Library to implement a well-behaved Unix daemon process."
 category = "main"
 optional = false
 python-versions = ">=3"
 files = [
-    {file = "python-daemon-3.0.0.tar.gz", hash = "sha256:62dedf6026ba939288936de15fbfec2d802f0aa731df60c3f2c17e49463d351d"},
-    {file = "python_daemon-3.0.0-py3-none-any.whl", hash = "sha256:244d97f57567d1a2da53840b4ef59946c9837b7790403d82ac6f846466dd73ec"},
+    {file = "python-daemon-2.3.2.tar.gz", hash = "sha256:3deeb808e72b6b89f98611889e11cc33754f5b2c1517ecfa1aaf25f402051fb5"},
+    {file = "python_daemon-2.3.2-py3-none-any.whl", hash = "sha256:01d26358598f8c3f5fc6de553e2f3080ffc59cf89102d7ee8098f33c72b3c04c"},
 ]
 
 [package.dependencies]
