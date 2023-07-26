@@ -28,7 +28,7 @@ from typing import Any
 
 
 class Proxy:
-    def __init__(self, url: str, token: str, port: int=15002, addr: str="0.0.0.0"):
+    def __init__(self, url: str, token: str, port: int = 15002, addr: str = "0.0.0.0"):
         self.port = port
         self.addr = addr
         self.token = token
