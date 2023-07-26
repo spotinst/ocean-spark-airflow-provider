@@ -24,7 +24,7 @@ import sys
 import asyncio
 import websockets
 
-from typing import Any
+from typing import Any, List
 
 
 class Proxy:
@@ -80,7 +80,7 @@ class Proxy:
         print(f"Listening on {self.addr} port {self.port}")
 
 
-def main(argv: list[str]) -> None:
+def main(argv: List[str]) -> None:
     import argparse
     import textwrap
 

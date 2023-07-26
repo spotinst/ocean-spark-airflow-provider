@@ -26,6 +26,7 @@ packages = [
 python = "^3.6.15"
 apache-airflow = ">=1"
 requests = "^2.0.0"
+websockets = "^11.0.3"
 
 
 [tool.poetry.dev-dependencies]
