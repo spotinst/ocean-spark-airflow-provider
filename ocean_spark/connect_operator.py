@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 class OceanSparkConnectOperator(BaseOperator):
     """
-    Submits a Spark app to Data Mechanics using the `POST /api/apps` API endpoint.
+    Submits a Spark Connect task to a Ocean Spark Application through websocket proxy.
     """
 
     # Used in airflow.models.BaseOperator
