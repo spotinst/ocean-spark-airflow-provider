@@ -132,7 +132,6 @@ class OceanSparkOperator(BaseOperator):
         return ""
 
     def _monitor_app(self, hook: OceanSparkHook, context: Dict) -> None:
-
         if self.app_id is None:
             # app not launched
             return

@@ -57,8 +57,12 @@ class OceanSparkConnectHook(BaseHook):
         loop.run_forever()
 
     def execute(self, app_id: str, sql: str):
-        path = urljoin(API_HOST, "cluster/{cluster_id}/app/{app_id}/connect?accountId={account_id}")
-        url = path.format(app_id=app_id,cluster_id=self.cluster_id,account_id=self.account_id)
+        path = urljoin(
+            API_HOST, "cluster/{cluster_id}/app/{app_id}/connect?accountId={account_id}"
+        )
+        url = path.format(
+            app_id=app_id, cluster_id=self.cluster_id, account_id=self.account_id
+        )
 
         loop = asyncio.get_event_loop()
         my_thread = threading.Thread(target=self.inverse_websockify, args=(url, loop))
