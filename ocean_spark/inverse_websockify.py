@@ -8,12 +8,11 @@ is essentially the opposite of "websockify".
 
 Note that this only handles simple byte streams of data, with no
 support for conveying WebSockets message framing back to the client.
-In most cases, specifying the WebSockets subprotocol is necessary.
 
 For example, Eclipse Mosquitto supports WebSockets on the server side,
 but not on the client side (for bridging).  To connect one instance
 
-  {prog} --port 15002 --subproto mqtt wss://server/
+  {prog} --port 15002
 
 and configure the client with e.g.
 
@@ -25,20 +24,17 @@ import sys
 import asyncio
 import websockets
 
+from typing import Any
+
 
 class Proxy:
-    def __init__(self, url, token, port=15002, addr="0.0.0.0", subproto=None):
+    def __init__(self, url: str, token: str, port: int=15002, addr: str="0.0.0.0"):
         self.port = port
         self.addr = addr
         self.token = token
         self.url = url
-        print(f"Proxying {addr}:{port} to {url}")
-        if subproto:
-            self.subproto = [subproto]
-        else:
-            self.subproto = None
 
-    async def copy(self, reader, writer):
+    async def copy(self, reader: Any, writer: Any) -> None:
         while True:
             data = await reader()
             if data == b"":
@@ -47,19 +43,19 @@ class Proxy:
             if future:
                 await future
 
-    async def handle_client(self, r, w):
+    async def handle_client(self, r: Any, w: Any) -> None:
         peer = w.get_extra_info("peername")
         print(f"{peer} connected")
         loop = asyncio.get_event_loop()
         try:
             async with websockets.connect(
                 self.url,
-                subprotocols=self.subproto,
+                subprotocols=None,
                 extra_headers={"Authorization": f"Bearer {self.token}"},
             ) as ws:
                 print(f"{peer} connected to {self.url}")
 
-                def r_reader():
+                def r_reader() -> Any:
                     return r.read(65536)
 
                 tcp_to_ws = loop.create_task(self.copy(r_reader, ws.send))
@@ -79,12 +75,12 @@ class Proxy:
         w.close()
         print(f"{peer} closed")
 
-    async def start(self):
+    async def start(self) -> None:
         await asyncio.start_server(self.handle_client, self.addr, self.port)
         print(f"Listening on {self.addr} port {self.port}")
 
 
-def main(argv):
+def main(argv: list[str]) -> None:
     import argparse
     import textwrap
 
@@ -101,13 +97,6 @@ def main(argv):
         "--listen", "-l", metavar="ADDR", default="0.0.0.0", help="TCP listen address"
     )
     parser.add_argument(
-        "--subproto",
-        "-s",
-        metavar="SUBPROTO",
-        default=None,
-        help="WebSocket subprotocol",
-    )
-    parser.add_argument(
         "--token", metavar="TOKEN", default=None, help="WebSocket token"
     )
     parser.add_argument(
@@ -117,7 +106,7 @@ def main(argv):
     args = parser.parse_args()
 
     loop = asyncio.get_event_loop()
-    proxy = Proxy(args.url, args.token, args.port, args.listen, args.subproto)
+    proxy = Proxy(args.url, args.token, args.port, args.listen)
     loop.run_until_complete(proxy.start())
     loop.run_forever()
 

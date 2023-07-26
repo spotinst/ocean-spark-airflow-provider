@@ -1,7 +1,6 @@
-from datetime import timedelta
 from ocean_spark.extra_links import OceanSparkApplicationOverviewLink
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 
 from airflow.models import BaseOperator
 from ocean_spark.connect_hook import (
@@ -36,7 +35,7 @@ class OceanSparkConnectOperator(BaseOperator):
 
     def __init__(
         self,
-        job_id: str = None,
+        job_id: str = "",
         app_id: str = "{{ params.app_id }}",
         sql: str = "{{ params.sql }}",
         conn_id: str = DEFAULT_CONN_NAME,
@@ -73,7 +72,7 @@ class OceanSparkConnectOperator(BaseOperator):
             sql=self.sql,
         )
 
-    def execute(self, context: Dict) -> None:
+    def execute(self, context: Context) -> None:
         self.hook.execute(self.app_id, self.sql)
         if self.on_spark_submit_callback:
             try:

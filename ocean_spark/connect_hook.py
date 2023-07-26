@@ -1,5 +1,6 @@
 from typing import Dict, Any
 import asyncio
+from asyncio.events import AbstractEventLoop
 from pyspark.sql import SparkSession
 
 from airflow import __version__ as airflow_version
@@ -38,7 +39,7 @@ class OceanSparkConnectHook(BaseHook):
     def __init__(
         self,
         ocean_spark_conn_id: str = "ocean_spark_default",
-        app_id: str = None,
+        app_id: str = "",
         sql: str = "select 1",
     ):
         super().__init__()
@@ -51,12 +52,12 @@ class OceanSparkConnectHook(BaseHook):
         self.sql = sql
         self.spark = SparkSession.builder.remote("sc://localhost").getOrCreate()
 
-    def inverse_websockify(self, url, loop):
+    def inverse_websockify(self, url: str, loop: AbstractEventLoop) -> None:
         proxy = Proxy(url, self.token)
         loop.run_until_complete(proxy.start())
         loop.run_forever()
 
-    def execute(self, app_id: str, sql: str):
+    def execute(self, app_id: str, sql: str) -> None:
         path = urljoin(
             API_HOST, "cluster/{cluster_id}/app/{app_id}/connect?accountId={account_id}"
         )
