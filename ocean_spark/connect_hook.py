@@ -19,7 +19,7 @@ from requests import exceptions as requests_exceptions
 
 from ocean_spark.response import ApiResponse
 
-from ocean_spark.inverse_websockify import Proxy
+from ocean_spark_connect.inverse_websockify import Proxy
 import threading
 
 API_HOST = "wss://api.spotinst.io/ocean/spark/"
