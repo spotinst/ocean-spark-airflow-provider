@@ -32,7 +32,7 @@ ocean_spark_connect = "^0.1.8"
 
 
 [tool.poetry.dev-dependencies]
-black = "^21.9b0"
+black = "^22.3.0"
 flake8 = "~=4.0.1"
 mypy = "=0.910"
 pytest = "~=6.1"
