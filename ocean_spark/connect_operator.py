@@ -3,6 +3,7 @@ from ocean_spark.extra_links import OceanSparkApplicationOverviewLink
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 
 from airflow.models import BaseOperator
+from airflow.utils.context import Context
 from ocean_spark.connect_hook import (
     DEFAULT_CONN_NAME,
     OceanSparkConnectHook,
@@ -10,10 +11,6 @@ from ocean_spark.connect_hook import (
 
 XCOM_APP_ID_KEY = "app_id"
 XCOM_APP_PAGE_URL_KEY = "app_page_url"
-
-
-if TYPE_CHECKING:
-    from airflow.utils.context import Context
 
 
 class OceanSparkConnectOperator(BaseOperator):
