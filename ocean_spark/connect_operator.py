@@ -41,7 +41,7 @@ class OceanSparkConnectOperator(BaseOperator):
         conn_id: str = DEFAULT_CONN_NAME,
         do_xcom_push: bool = True,
         on_spark_submit_callback: Optional[
-            Callable[[OceanSparkConnectHook, str, Dict], None]
+            Callable[[OceanSparkConnectHook, str, Context], None]
         ] = None,
         **kwargs: Any,
     ):
@@ -56,7 +56,7 @@ class OceanSparkConnectOperator(BaseOperator):
         self.job_id: Optional[str] = job_id
         self.do_xcom_push: bool = do_xcom_push
         self.on_spark_submit_callback: Optional[
-            Callable[[OceanSparkConnectHook, str, Dict], None]
+            Callable[[OceanSparkConnectHook, str, Context], None]
         ] = on_spark_submit_callback
         self.hook = self._get_hook()
         if self.job_id is None:
@@ -72,7 +72,7 @@ class OceanSparkConnectOperator(BaseOperator):
             sql=self.sql,
         )
 
-    def execute(self, context: Dict[Any, Any]) -> None:
+    def execute(self, context: Context) -> None:
         self.hook.execute(self.app_id, self.sql)
         if self.on_spark_submit_callback:
             try:

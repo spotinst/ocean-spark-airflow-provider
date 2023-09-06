@@ -44,7 +44,7 @@ check-fmt: .venv ## Check format code with black
 .PHONY: check-typing
 check-typing: .venv ## Check typing with mypy
 	@echo "[CHK] typing"
-	poetry run mypy ocean_spark tests
+	poetry run mypy ocean_spark tests --ignore-missing-imports
 
 .PHONY: check-linter
 check-linter: .venv ## Lint code with flake8

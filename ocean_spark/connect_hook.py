@@ -5,10 +5,7 @@ from pyspark.sql import SparkSession
 
 from airflow import __version__ as airflow_version
 
-if airflow_version.startswith("1."):
-    from airflow.hooks.base_hook import BaseHook
-else:
-    from airflow.hooks.base import BaseHook
+from airflow.hooks.base import BaseHook
 
 from airflow import __version__
 from airflow.exceptions import AirflowException

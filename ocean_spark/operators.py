@@ -42,7 +42,7 @@ class OceanSparkOperator(BaseOperator):
 
     def __init__(
         self,
-        job_id: str = None,
+        job_id: str = "",
         app_id: Optional[str] = None,
         config_template_id: Optional[str] = None,
         config_overrides: Optional[Union[Dict, str]] = None,
@@ -52,7 +52,7 @@ class OceanSparkOperator(BaseOperator):
         retry_delay: Union[timedelta, int] = timedelta(seconds=1),
         do_xcom_push: bool = True,
         on_spark_submit_callback: Optional[
-            Callable[[OceanSparkHook, str, Dict], None]
+            Callable[[OceanSparkHook, str, Context], None]
         ] = None,
         **kwargs: Any,
     ):
@@ -76,7 +76,7 @@ class OceanSparkOperator(BaseOperator):
         self.config_overrides: Optional[Union[Dict, str]] = config_overrides
         self.do_xcom_push: bool = do_xcom_push
         self.on_spark_submit_callback: Optional[
-            Callable[[OceanSparkHook, str, Dict], None]
+            Callable[[OceanSparkHook, str, Context], None]
         ] = on_spark_submit_callback
         self.payload: Dict = {}
 
@@ -109,7 +109,7 @@ class OceanSparkOperator(BaseOperator):
                 )
             self.payload["configOverrides"] = self.config_overrides
 
-    def execute(self, context: Dict) -> None:
+    def execute(self, context: Context) -> None:
         self._build_payload()
         hook = self._get_hook()
         self.app_id = hook.submit_app(self.payload)
@@ -135,7 +135,7 @@ class OceanSparkOperator(BaseOperator):
             return self._get_hook().get_app_page_url(self.app_id)
         return ""
 
-    def _monitor_app(self, hook: OceanSparkHook, context: Dict) -> None:
+    def _monitor_app(self, hook: OceanSparkHook, context: Context) -> None:
         if self.app_id is None:
             # app not launched
             return
