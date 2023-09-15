@@ -7,7 +7,6 @@ from airflow import __version__ as airflow_version
 
 from airflow.hooks.base import BaseHook
 
-from airflow import __version__
 from airflow.exceptions import AirflowException
 
 from urllib.parse import urljoin
@@ -22,7 +21,7 @@ import threading
 API_HOST = "wss://api.spotinst.io/ocean/spark/"
 FE_HOST = "https://console.spotinst.com/ocean/spark/"
 
-USER_AGENT_HEADER = {"user-agent": f"airflow-{__version__}"}
+USER_AGENT_HEADER = {"user-agent": f"airflow-{airflow_version}"}
 
 DEFAULT_CONN_NAME = "ocean_spark_default"
 
