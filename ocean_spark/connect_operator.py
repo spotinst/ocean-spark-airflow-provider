@@ -70,7 +70,7 @@ class OceanSparkConnectOperator(BaseOperator):
         )
 
     def execute(self, context: Context) -> None:
-        self.hook.execute(self.app_id, self.sql)
+        self.hook.execute(self.sql)
         if self.on_spark_submit_callback:
             try:
                 self.on_spark_submit_callback(self.hook, self.app_id, context)
