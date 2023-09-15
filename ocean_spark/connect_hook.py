@@ -55,7 +55,8 @@ class OceanSparkConnectHook(BaseHook):
 
     def execute(self, sql: str) -> None:
         path = urljoin(
-            API_HOST, f"cluster/{self.cluster_id}/app/{self.app_id}/connect?accountId={self.account_id}"
+            API_HOST,
+            f"cluster/{self.cluster_id}/app/{self.app_id}/connect?accountId={self.account_id}",
         )
 
         loop = asyncio.get_event_loop()
