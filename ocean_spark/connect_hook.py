@@ -59,7 +59,7 @@ class OceanSparkConnectHook(BaseHook):
         )
 
         loop = asyncio.get_event_loop()
-        my_thread = threading.Thread(target=self.inverse_websockify, args=(url, loop))
+        my_thread = threading.Thread(target=self.inverse_websockify, args=(path, loop))
         my_thread.start()
 
         try:
