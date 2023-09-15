@@ -56,7 +56,7 @@ class OceanSparkConnectHook(BaseHook):
 
     def execute(self, app_id: str, sql: str) -> None:
         path = urljoin(
-            API_HOST, "cluster/{cluster_id}/app/{app_id}/connect?accountId={account_id}"
+            API_HOST, f"cluster/{self.cluster_id}/app/{app_id}/connect?accountId={self.account_id}"
         )
         url = path.format(
             app_id=app_id, cluster_id=self.cluster_id, account_id=self.account_id
