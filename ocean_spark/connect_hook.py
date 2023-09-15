@@ -22,7 +22,7 @@ import threading
 API_HOST = "wss://api.spotinst.io/ocean/spark/"
 FE_HOST = "https://console.spotinst.com/ocean/spark/"
 
-USER_AGENT_HEADER = {"user-agent": "airflow-{v}".format(v=__version__)}
+USER_AGENT_HEADER = {"user-agent": f"airflow-{__version__}"}
 
 DEFAULT_CONN_NAME = "ocean_spark_default"
 
