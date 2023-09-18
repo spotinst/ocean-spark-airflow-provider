@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-PROJECT_VERSION=0.1.6
+PROJECT_VERSION=1.0.0
 SRCS=$(shell git ls-files -c)
 DEPS=$(SRCS) pyproject.toml
 PROJECT_NAME=ocean-spark-airflow-provider
@@ -62,7 +62,7 @@ all-tests: check-fmt check-typing check-linter test ## Run all tests and checks
 
 ##@ Build
 
-SDIST_NAME=$(PROJECT_NAME)-$(PROJECT-VERSION).tar.gz
+SDIST_NAME=$(PROJECT_NAME)-$(PROJECT_VERSION).tar.gz
 
 dist/$(SDIST_NAME): $(DEPS)
 	@echo "[BLD] sdist pakcages"
@@ -99,24 +99,16 @@ check_docker_compose:
 		exit 1; \
 	fi
 
-.PHONY: serve_airflow1
-serve_airflow1: dist/$(WHEEL_NAME) check_docker_compose ## Run airflow1 locally
+.PHONY: serve_airflow
+serve_airflow: dist/$(WHEEL_NAME) check_docker_compose ## Run airflow locally
 	@echo "[RUN] docker-compose up"
-	cd deploy/airflow1; \
-	docker-compose -p airflow1 up --force-recreate --build --remove-orphans
-
-.PHONY: serve_airflow2
-serve_airflow2: dist/$(WHEEL_NAME) check_docker_compose ## Run airflow2 locally
-	@echo "[RUN] docker-compose up"
-	cd deploy/airflow2; \
-	docker-compose -p airflow2 up --force-recreate --build --remove-orphans
+	cd deploy/airflow; \
+	docker-compose -p airflow up --force-recreate --build --remove-orphans
 
 .PHONY: clean_airflow
 clean_airflow: ## Clean up all airflow resources
 	@echo "[RUN] docker-compose clean"
-	cd deploy/airflow1; \
-	docker-compose down --volumes --remove-orphans
-	cd deploy/airflow2; \
+	cd deploy/airflow; \
 	docker-compose down --volumes --remove-orphans
 
 ##@ Publish
