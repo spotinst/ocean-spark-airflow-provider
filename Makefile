@@ -111,10 +111,10 @@ clean_airflow: ## Clean up all airflow resources
 	cd deploy/airflow; \
 	docker-compose down --volumes --remove-orphans
 
-##@ Publish
+##@ Publish manually
 .PHONY: publish
 publish: dist/$(SDIST_NAME) dist/$(WHEEL_NAME) ## Publish packages
-	poetry publish
+	poetry publish -u __token__ -p $(PYPI_TOKEN)
 
 
 .PHONY: clean
