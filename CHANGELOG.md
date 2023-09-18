@@ -1,3 +1,7 @@
+# v1.0.0
+- Spark Connect Operator
+- Dropping support for airflow 1
+
 # v0.1.3
 - Retry on 4xx errors
 - Fix mypy errors
