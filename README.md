@@ -114,7 +114,7 @@ spark_pi_task = OceanSparkConnectOperator(
 )
 ```
 
-### Tregger the DAG with config, such as
+### Trigger the DAG with config, such as
 
 ```json
 {
