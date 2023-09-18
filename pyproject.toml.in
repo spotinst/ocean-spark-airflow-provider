@@ -23,15 +23,18 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = "^3.6.15"
+python = "^3.9.7"
 apache-airflow = ">=1"
 requests = "^2.0.0"
+websockets = "^11.0.3"
+pyspark = "^3.4.1"
+ocean_spark_connect = "^0.1.8"
 
 
 [tool.poetry.dev-dependencies]
-black = "^21.9b0"
+black = "^22.3.0"
 flake8 = "~=4.0.1"
-mypy = "=0.910"
+mypy = "=1.5.1"
 pytest = "~=6.1"
 pytest-mock = "~=3.5.1"
 requests-mock = "~=1.8.0"

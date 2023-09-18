@@ -4,10 +4,7 @@ from typing import Callable, Dict, Any
 
 from airflow import __version__ as airflow_version
 
-if airflow_version.startswith("1."):
-    from airflow.hooks.base_hook import BaseHook
-else:
-    from airflow.hooks.base import BaseHook
+from airflow.hooks.base import BaseHook
 
 from airflow import __version__
 from airflow.exceptions import AirflowException
@@ -66,9 +63,7 @@ class OceanSparkHook(BaseHook):
         self.retry_limit = retry_limit
         self.retry_delay = retry_delay
 
-    def _do_api_call(
-        self, method: Callable, endpoint: str, payload: Dict = None
-    ) -> Dict:
+    def _do_api_call(self, method: Callable, endpoint: str, payload: Dict) -> Dict:
         """
         Utility function to perform an API call with retries
         :param endpoint_info: Tuple of method and endpoint
@@ -81,6 +76,10 @@ class OceanSparkHook(BaseHook):
         :rtype: dict
         """
 
+        if payload is None:
+            payload = {}
+        if payload is None:
+            payload = {}
         headers = {**USER_AGENT_HEADER, "Authorization": f"Bearer {self.token}"}
 
         attempt_num = 1
@@ -149,6 +148,7 @@ class OceanSparkHook(BaseHook):
                 app_id=app_id,
                 account_id=self.account_id,
             ),
+            {},
         )
         return response["response"]["items"][0]
 
@@ -161,6 +161,7 @@ class OceanSparkHook(BaseHook):
                 app_id=app_id,
                 account_id=self.account_id,
             ),
+            {},
         )
 
     def get_app_page_url(self, app_id: str) -> str:

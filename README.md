@@ -91,6 +91,39 @@ spark_pi_task = OceanSparkOperator(
 )
 ```
 
+### Using the Spark Connect operator
+
+```python
+from airflow import DAG, utils
+from ocean_spark.connect_operator import (
+    OceanSparkConnectOperator,
+)
+
+args = {
+    "owner": "airflow",
+    "depends_on_past": False,
+    "start_date": utils.dates.days_ago(0, second=1),
+}
+
+
+dag = DAG(dag_id="spark-connect-task", default_args=args, schedule_interval=None)
+
+spark_pi_task = OceanSparkConnectOperator(
+    task_id="spark-connect",
+    dag=dag,
+)
+```
+
+### Trigger the DAG with config, such as
+
+```json
+{
+  "app_id": "spark-connect-123",
+  "sql": "select random()"
+}
+```
+
+
 more examples are available for [Airflow 1](./deploy/airflow1/example_dags) and [Airflow 2](./deploy/airflow2/dags).
 
 ## Test locally
