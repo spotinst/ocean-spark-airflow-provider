@@ -4,13 +4,6 @@ An Airflow plugin and provider to launch and monitor Spark
 applications on [Ocean for
 Apache Spark](https://spot.io/products/ocean-apache-spark/).
 
-## Compatibility
-
-`ocean-spark-airflow-provider` is compatible with both Airflow 1 and
-Airflow 2. It is detected as an Airflow plugin by Airflow 1 and up,
-and as a provider by Airflow 2.
-
-
 ## Installation
 
 ```
@@ -52,16 +45,10 @@ use with the `connection_name` argument (defaults to
 Ocean Spark cluster per environment (dev, staging, prod), and you
 can easily target an environment by picking the correct Airflow connection.
 
-### Using the operator
+### Using the Spark operator
 
 ```python
-from airflow import __version__ as airflow_version
-if airflow_version.startswith("1."):
-    # Airflow 1, import as plugin
-    from airflow.operators.ocean_spark import OceanSparkOperator
-else:
-    # Airflow 2
-    from ocean_spark.operators import OceanSparkOperator
+from ocean_spark.operators import OceanSparkOperator
     
 # DAG creation
     
@@ -124,10 +111,10 @@ spark_pi_task = OceanSparkConnectOperator(
 ```
 
 
-more examples are available for [Airflow 1](./deploy/airflow1/example_dags) and [Airflow 2](./deploy/airflow2/dags).
+more examples are available for [Airflow 2](./deploy/airflow2/dags).
 
 ## Test locally
 
 You can test the plugin locally using the docker compose setup in this
-repository. Run `make serve_airflow2` at the root of the repository to
+repository. Run `make serve_airflow` at the root of the repository to
 launch an instance of Airflow 2 with the provider already installed.
