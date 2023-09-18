@@ -47,7 +47,7 @@ x-airflow-common:
   # build at the root of the repo to install the plugin
   build:
     context: ../..
-    dockerfile: ./deploy/airflow2/Dockerfile
+    dockerfile: ./deploy/airflow/Dockerfile
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
