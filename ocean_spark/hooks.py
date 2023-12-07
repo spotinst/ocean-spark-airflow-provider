@@ -119,13 +119,17 @@ class OceanSparkHook(BaseHook):
     @staticmethod
     def _construct_error_message(ex: requests_exceptions.RequestException) -> str:
         try:
+            if ex.response is None:
+                return f"Request to the Ocean Spark API failed with error {ex}"
             api_response: ApiResponse = json.loads(ex.response.content)
             request_id = api_response["request"]["id"]
             errors = api_response["response"]["errors"]
             status_code = api_response["response"]["status"]["code"]
             return f"Request '{request_id}' to the Ocean Spark API failed with status '{status_code}' and errors: {errors}"
         except ValueError:
-            return f"Request to the Ocean Spark API failed with status '{ex.response.status_code}' and error {ex.response.content}"
+            if ex.response is None:
+                return f"Request to the Ocean Spark API failed with error {ex}"
+            return f"Request to the Ocean Spark API failed with status '{ex.response.status_code}' and error {ex.response.content.decode('utf-8')}"
 
     def submit_app(self, payload: Dict) -> str:
         method, path = SUBMIT_APP_ENDPOINT
