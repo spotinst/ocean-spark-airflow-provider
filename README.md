@@ -30,8 +30,8 @@ need to have:
  - [A Spot
    token](https://docs.spot.io/administration/api/create-api-token?id=create-an-api-token)
    to interact with the Spot API.
- 
-![connection setup dialog](./images/connection_setup.png) 
+
+![connection setup dialog](./images/connection_setup.png)
 
 The **Ocean for Apache Spark** connection type is not available for Airflow
 1, instead create an **HTTP** connection and fill your cluster id as
@@ -41,7 +41,7 @@ You will need to create a separate connection for each Ocean Spark
 cluster that you want to use with Airflow.  In the
 `OceanSparkOperator`, you can select which Ocean Spark connection to
 use with the `connection_name` argument (defaults to
-`ocean_spark_default`). For example, you may choose to have one 
+`ocean_spark_default`). For example, you may choose to have one
 Ocean Spark cluster per environment (dev, staging, prod), and you
 can easily target an environment by picking the correct Airflow connection.
 
@@ -49,9 +49,9 @@ can easily target an environment by picking the correct Airflow connection.
 
 ```python
 from ocean_spark.operators import OceanSparkOperator
-    
+
 # DAG creation
-    
+
 spark_pi_task = OceanSparkOperator(
     job_id="spark-pi",
     task_id="compute-pi",
@@ -78,11 +78,11 @@ spark_pi_task = OceanSparkOperator(
 )
 ```
 
-### Using the Spark Connect operator
+### Using the Spark Connect operator (available since airflow 2.6.2)
 
 ```python
 from airflow import DAG, utils
-from ocean_spark.connect_operator import (
+from ocean_spark.operators import (
     OceanSparkConnectOperator,
 )
 
@@ -105,7 +105,6 @@ spark_pi_task = OceanSparkConnectOperator(
 
 ```json
 {
-  "app_id": "spark-connect-123",
   "sql": "select random()"
 }
 ```

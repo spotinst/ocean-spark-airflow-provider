@@ -2,6 +2,5 @@ pyproject.toml
 dist/
 *.egg-info
 __pycache__/
-deploy/airflow2/logs
-deploy/airflow1/logs
+deploy/airflow/logs
 
