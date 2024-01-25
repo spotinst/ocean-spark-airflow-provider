@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 
 from airflow.models import BaseOperator
 from airflow.utils.context import Context
-from ocean_spark.connect_hook import (
+from ocean_spark.connect.hook import (
     DEFAULT_CONN_NAME,
     OceanSparkConnectHook,
 )
@@ -33,7 +33,6 @@ class OceanSparkConnectOperator(BaseOperator):
     def __init__(
         self,
         job_id: str = "",
-        app_id: str = "{{ params.app_id }}",
         sql: str = "{{ params.sql }}",
         conn_id: str = DEFAULT_CONN_NAME,
         do_xcom_push: bool = True,
@@ -48,7 +47,6 @@ class OceanSparkConnectOperator(BaseOperator):
         super().__init__(**kwargs)
 
         self.conn_id = conn_id
-        self.app_id = app_id
         self.sql = sql
         self.job_id: Optional[str] = job_id
         self.do_xcom_push: bool = do_xcom_push
@@ -65,7 +63,6 @@ class OceanSparkConnectOperator(BaseOperator):
     def _get_hook(self) -> OceanSparkConnectHook:
         return OceanSparkConnectHook(
             self.conn_id,
-            app_id=self.app_id,
             sql=self.sql,
         )
 
@@ -73,7 +70,7 @@ class OceanSparkConnectOperator(BaseOperator):
         self.hook.execute(self.sql)
         if self.on_spark_submit_callback:
             try:
-                self.on_spark_submit_callback(self.hook, self.app_id, context)
+                self.on_spark_submit_callback(self.hook, self.hook.app_id, context)
             except Exception as err:
                 self.log.exception(err)
 
@@ -82,10 +79,10 @@ class OceanSparkConnectOperator(BaseOperator):
         self.log.info(
             "Task: %s with app name: %s was requested to be cancelled.",
             self.task_id,
-            self.app_id,
+            self.hook.app_id,
         )
 
     def get_application_overview_url(self) -> str:
-        if self.app_id is not None:
-            return self._get_hook().get_app_page_url(self.app_id)
+        if self.hook.app_id is not None:
+            return self._get_hook().get_app_page_url()
         return ""

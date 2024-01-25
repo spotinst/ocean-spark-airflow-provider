@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-PROJECT_VERSION=1.0.0
+PROJECT_VERSION=1.1.0
 SRCS=$(shell git ls-files -c)
 DEPS=$(SRCS) pyproject.toml
 PROJECT_NAME=ocean-spark-airflow-provider
@@ -87,10 +87,10 @@ dist: dist/$(WHEEL_NAME) ## Build distribution
 .PHONY: build
 build: sdist wheel ## Build package
 
-##@ Local deployment 
+##@ Local deployment
 
 .PHONY: check_docker_compose
-check_docker_compose: 
+check_docker_compose:
 	@echo "[CHK] docker-compose"
 	if command -v docker-compose >/dev/null 2>&1; then \
 		exit 0; \
@@ -100,14 +100,17 @@ check_docker_compose:
 	fi
 
 .PHONY: serve_airflow
-serve_airflow: dist/$(WHEEL_NAME) check_docker_compose ## Run airflow locally
+AIRFLOW_PYTHON_VERSION ?=
+AIRFLOW_VERSION ?=
+serve_airflow: check_docker_compose clean_airflow dist/$(WHEEL_NAME) ## Run airflow locally
 	@echo "[RUN] docker-compose up"
 	cd deploy/airflow; \
-	docker-compose -p airflow up --force-recreate --build --remove-orphans
+	AIRFLOW_PYTHON_VERSION=$(AIRFLOW_PYTHON_VERSION) AIRFLOW_VERSION=$(AIRFLOW_VERSION) docker-compose -p airflow up --force-recreate --build --remove-orphans
 
 .PHONY: clean_airflow
 clean_airflow: ## Clean up all airflow resources
 	@echo "[RUN] docker-compose clean"
+	rm dist/*; \
 	cd deploy/airflow; \
 	docker-compose down --volumes --remove-orphans
 
@@ -121,5 +124,34 @@ publish: dist/$(SDIST_NAME) dist/$(WHEEL_NAME) ## Publish packages
 clean: | clean_airflow
 	@echo "[CLN] cleaning repository"
 	git clean -dfx
+
+serve_airflow_2_0_2: AIRFLOW_PYTHON_VERSION=3.7
+serve_airflow_2_0_2: AIRFLOW_VERSION=2.0.2
+serve_airflow_2_0_2: serve_airflow
+
+serve_airflow_2_2_2: AIRFLOW_PYTHON_VERSION=3.7
+serve_airflow_2_2_2: AIRFLOW_VERSION=2.2.2
+serve_airflow_2_2_2: serve_airflow
+
+serve_airflow_2_4_3: AIRFLOW_PYTHON_VERSION=3.10
+serve_airflow_2_4_3: AIRFLOW_VERSION=2.4.3
+serve_airflow_2_4_3: serve_airflow
+
+serve_airflow_2_5_1: AIRFLOW_PYTHON_VERSION=3.10
+serve_airflow_2_5_1: AIRFLOW_VERSION=2.5.1
+serve_airflow_2_5_1: serve_airflow
+
+serve_airflow_2_6_3: AIRFLOW_PYTHON_VERSION=3.10
+serve_airflow_2_6_3: AIRFLOW_VERSION=2.6.3
+serve_airflow_2_6_3: serve_airflow
+
+serve_airflow_2_7_2: AIRFLOW_PYTHON_VERSION=3.11
+serve_airflow_2_7_2: AIRFLOW_VERSION=2.7.2
+serve_airflow_2_7_2: serve_airflow
+
+serve_airflow_2_8_1: AIRFLOW_PYTHON_VERSION=3.11
+serve_airflow_2_8_1: AIRFLOW_VERSION=2.8.1
+serve_airflow_2_8_1: serve_airflow
+
 
 $(V).SILENT:

@@ -15,7 +15,7 @@ from requests import exceptions as requests_exceptions
 
 from ocean_spark.response import ApiResponse
 
-from ocean_spark_connect.inverse_websockify import Proxy
+from ocean_spark.connect.inverse_websockify import Proxy
 import threading
 
 API_HOST = "wss://api.spotinst.io/ocean/spark/"
@@ -27,24 +27,23 @@ DEFAULT_CONN_NAME = "ocean_spark_default"
 
 
 class OceanSparkConnectHook(BaseHook):
-    conn_name_attr: str = "ocean_spark_conn_id"
-    default_conn_name: str = "ocean_spark_default"
-    conn_type: str = "ocean_spark"
-    hook_name: str = "Ocean for Apache Spark"
+    conn_name_attr: str = "ocean_spark_connect_conn_id"
+    default_conn_name: str = "ocean_spark_connect_default"
+    conn_type: str = "ocean_spark_connect"
+    hook_name: str = "Ocean for Apache Spark (Spark Connect)"
 
     def __init__(
         self,
-        ocean_spark_conn_id: str = "ocean_spark_default",
-        app_id: str = "",
+        ocean_spark_connect_conn_id: str = "ocean_spark_connect_default",
         sql: str = "select 1",
     ):
         super().__init__()
-        self.conn_id = ocean_spark_conn_id
-        self.conn = self.get_connection(ocean_spark_conn_id)
+        self.conn_id = ocean_spark_connect_conn_id
+        self.conn = self.get_connection(ocean_spark_connect_conn_id)
         self.token = self.conn.password
         self.cluster_id = self.conn.host
         self.account_id = self.conn.login
-        self.app_id = app_id
+        self.app_id = self.conn.port
         self.sql = sql
         self.spark = SparkSession.builder.remote("sc://localhost").getOrCreate()
 
@@ -75,26 +74,28 @@ class OceanSparkConnectHook(BaseHook):
     def kill_task(self) -> None:
         self.spark.stop()
 
-    def get_app_page_url(self, app_id: str) -> str:
+    def get_app_page_url(self) -> str:
         url = urljoin(
             FE_HOST,
-            f"apps/clusters/{self.cluster_id}/apps/{app_id}/overview&accountId={self.account_id}",
+            f"apps/clusters/{self.cluster_id}/apps/{self.app_id}/overview&accountId={self.account_id}",
         )
         return url
 
     @staticmethod
     def get_ui_field_behaviour() -> Dict:
         return {
-            "hidden_fields": ["port", "extra", "schema"],
+            "hidden_fields": ["extra", "schema"],
             "relabeling": {
                 "password": "API token",
                 "host": "Cluster id",
                 "login": "Account id",
+                "port": "Application Id",
             },
             "placeholders": {
                 "host": "ocean spark cluster id",
                 "password": "Ocean API token",
                 "login": "Ocean Spot account id",
+                "port": "Ocean Spark Application Id",
             },
         }
 
