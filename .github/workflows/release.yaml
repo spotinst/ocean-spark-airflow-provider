@@ -30,7 +30,7 @@ jobs:
           poetry-version: "1.7.1"
 
       - name: poetry build
-        run: poetry build
+        run: make build
         shell: bash
 
       - name: Publish package distributions to PyPI
