@@ -35,6 +35,7 @@ class OceanSparkOperator(BaseOperator):
     template_fields = (
         "app_id",
         "job_id",
+        "app_display_name",
         "config_template_id",
         "config_overrides",
     )
@@ -48,6 +49,7 @@ class OceanSparkOperator(BaseOperator):
         self,
         job_id: str = "",
         app_id: Optional[str] = None,
+        app_display_name: Optional[str] = None,
         config_template_id: Optional[str] = None,
         config_overrides: Optional[Union[Dict, str]] = None,
         conn_id: str = DEFAULT_CONN_NAME,
@@ -74,6 +76,7 @@ class OceanSparkOperator(BaseOperator):
             else timedelta(seconds=retry_delay)
         )
         self.app_id: Optional[str] = None  # will be set from the API response
+        self.app_display_name: Optional[str] = None
         self._payload_app_id: Optional[str] = app_id
         self.job_id: Optional[str] = job_id
         self.config_template_id: Optional[str] = config_template_id
@@ -103,6 +106,8 @@ class OceanSparkOperator(BaseOperator):
             self.payload["appId"] = self._payload_app_id
         if self.config_template_id is not None:
             self.payload["configTemplateId"] = self.config_template_id
+        if self.app_display_name is not None:
+            self.payload["appDisplayName"] = self.app_display_name
 
         # templated config overrides dict pulled from xcom is a json str
         if self.config_overrides is not None:
