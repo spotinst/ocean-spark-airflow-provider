@@ -1,6 +1,6 @@
 import json
 from datetime import timedelta
-from typing import Callable, Dict, Any
+from typing import Callable, Dict, Any, Tuple
 
 
 from airflow.hooks.base import BaseHook
@@ -18,6 +18,11 @@ from ocean_spark.response import ApiResponse
 
 API_HOST = "https://api.spotinst.io/ocean/spark/"
 FE_HOST = "https://console.spotinst.com/ocean/spark/"
+
+GET_CLUSTER_ENDPOINT = (
+    requests.get,
+    urljoin(API_HOST, "cluster/{cluster_id}"),
+)
 
 SUBMIT_APP_ENDPOINT = (
     requests.post,
@@ -79,8 +84,6 @@ class OceanSparkHook(BaseHook):
         :rtype: dict
         """
 
-        if payload is None:
-            payload = {}
         if payload is None:
             payload = {}
         headers = {**USER_AGENT_HEADER, "Authorization": f"Bearer {self.token}"}
@@ -176,6 +179,28 @@ class OceanSparkHook(BaseHook):
             FE_HOST,
             f"apps/clusters/{self.cluster_id}/apps/{app_id}/overview&accountId={self.account_id}",
         )
+
+    def test_connection(self) -> Tuple[bool, str]:
+        method, path = GET_CLUSTER_ENDPOINT
+        try:
+            response = self._do_api_call(
+                method,
+                path.format(
+                    cluster_id=self.cluster_id,
+                ),
+                {},
+            )
+            if response["response"]["items"][0]["state"] not in [
+                "AVAILABLE",
+                "PROGRESSING",
+            ]:
+                return (
+                    False,
+                    f"Cluster state is {response['response']['items'][0]['state']}",
+                )
+            return True, "Connection successful"
+        except AirflowException as e:
+            return False, str(e)
 
     @staticmethod
     def get_ui_field_behaviour() -> Dict:
