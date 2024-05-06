@@ -107,10 +107,13 @@ class OceanSparkOperator(BaseOperator):
         # templated config overrides dict pulled from xcom is a json str
         if self.config_overrides is not None:
             if isinstance(self.config_overrides, str):
-                # json standard requires double quotes
-                self.config_overrides = json.loads(
-                    self.config_overrides.replace("'", '"')
-                )
+                try:
+                    self.config_overrides = json.loads(self.config_overrides)
+                except json.JSONDecodeError as e:
+                    raise AirflowException(
+                        f"Failed to parse config_overrides as JSON: {e}"
+                    )
+
             self.payload["configOverrides"] = self.config_overrides
 
     def execute(self, context: "Context") -> None:
