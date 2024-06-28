@@ -23,8 +23,8 @@ packages = [
 
 
 [tool.poetry.dependencies]
-python = "^3.7"
-apache-airflow = ">=1"
+python = ">=3.8,<3.13"
+apache-airflow = "^2.9.2"
 requests = "^2.0.0"
 websockets = "^11.0.3"
 pyspark = "^3.0.1"
