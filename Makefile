@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-PROJECT_VERSION=1.1.1
+PROJECT_VERSION=$(shell cat VERSION_NUMBER)
 SRCS=$(shell git ls-files -c)
 DEPS=$(SRCS) pyproject.toml
 PROJECT_NAME=ocean-spark-airflow-provider

@@ -2,9 +2,11 @@
 name: Publish package to PyPI
 
 on:
-  release:
-    types:
-      - created
+  push:
+    branches:
+      - main
+    paths:
+      - VERSION_NUMBER
 
 jobs:
   pypi-publish:
