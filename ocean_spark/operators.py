@@ -162,6 +162,11 @@ class OceanSparkOperator(BaseOperator):
                     self.log.info("%s completed successfully.", self.task_id)
                     return
                 else:
+                    self.log.info(
+                        "Ocean Spark task failure, retrieving Spark driver logs..."
+                    )
+                    # printing driver logs as-is to preserve formatting
+                    print(hook.get_driver_logs(self.app_id))
                     error_message = "{t} failed with terminal state: {s}".format(
                         t=self.task_id, s=app_state.value
                     )

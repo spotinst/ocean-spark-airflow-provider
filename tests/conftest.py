@@ -22,7 +22,7 @@ def successful_submission(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "POST",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app"),
+        re.compile(r"^https://api.spotinst.io/ocean/spark/cluster/.*/app[^\/]*$"),
         status_code=200,
         json={
             "request": {
@@ -283,7 +283,7 @@ def failed_submission(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "POST",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app"),
+        re.compile(r"^https://api.spotinst.io/ocean/spark/cluster/.*/app[^\/]*$"),
         status_code=400,
         json={
             "request": {
@@ -311,7 +311,7 @@ def successful_kill(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "DELETE",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app"),
+        re.compile(r"^https://api.spotinst.io/ocean/spark/cluster/.*/app/[^\/]*$"),
         status_code=200,
         json="",
     )
@@ -322,7 +322,7 @@ def successful_get_app(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "GET",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app/.*"),
+        re.compile(r"^https://api.spotinst.io/ocean/spark/cluster/.*/app/[^\/]*$"),
         status_code=200,
         json={
             "request": {
@@ -583,7 +583,7 @@ def get_app_completed(requests_mock: RequestsMocker) -> None:
     requests_mock.real_http = True
     requests_mock.register_uri(
         "GET",
-        re.compile("https://api.spotinst.io/ocean/spark/cluster/.*/app/.*"),
+        re.compile(r"^https://api.spotinst.io/ocean/spark/cluster/.*/app/[^\/]*$"),
         status_code=200,
         json={
             "request": {
@@ -840,6 +840,267 @@ def get_app_completed(requests_mock: RequestsMocker) -> None:
 
 
 @pytest.fixture(scope="function")
+def get_app_failed(requests_mock: RequestsMocker) -> None:
+    requests_mock.real_http = True
+    requests_mock.register_uri(
+        "GET",
+        re.compile(r"^https://api.spotinst.io/ocean/spark/cluster/.*/app/[^\/]*$"),
+        status_code=200,
+        json={
+            "request": {
+                "id": "e593ff58-067d-4340-92f9-8b1c0bad70d7",
+                "url": "string",
+                "method": "string",
+                "timestamp": "2018-06-20T11:35:01.745Z",
+            },
+            "response": {
+                "status": {"code": 200, "message": "OK"},
+                "items": [
+                    {
+                        "createdAt": "2018-10-10T10:50:29.000+0000",
+                        "updatedAt": "2018-11-01T10:50:29.000+0000",
+                        "internalId": "fa61bb92-4bb7-49aa-87d3-7823bd263d1e",
+                        "id": "test-app-id",
+                        "displayName": "test app name",
+                        "userId": 59438,
+                        "clusterId": "test-cluster-id",
+                        "controllerClusterId": "my-ocean-cluster",
+                        "appState": "FAILED",
+                        "submissionSource": "public-api",
+                        "job": {
+                            "id": "daily-reporting",
+                            "displayName": "Daily Reporting",
+                        },
+                        "config": {
+                            "arguments": ["string"],
+                            "deps": {
+                                "files": ["string"],
+                                "jars": ["string"],
+                                "pyFiles": ["string"],
+                            },
+                            "driver": {
+                                "affinity": {
+                                    "nodeAffinity": {
+                                        "preferredDuringSchedulingIgnoredDuringExecution": []
+                                    },
+                                    "podAffinity": {
+                                        "preferredDuringSchedulingIgnoredDuringExecution": [],
+                                        "requiredDuringSchedulingIgnoredDuringExecution": [],
+                                    },
+                                    "podAntiAffinity": {
+                                        "preferredDuringSchedulingIgnoredDuringExecution": [],
+                                        "requiredDuringSchedulingIgnoredDuringExecution": [],
+                                    },
+                                },
+                                "annotations": {
+                                    "property1": "string",
+                                    "property2": "string",
+                                },
+                                "configMaps": [{}],
+                                "coreLimit": "string",
+                                "coreRequest": "string",
+                                "cores": 0,
+                                "envSecretKeyRefs": {
+                                    "property1": {},
+                                    "property2": {},
+                                },
+                                "envVars": {
+                                    "property1": "string",
+                                    "property2": "string",
+                                },
+                                "hostAliases": [{"hostnames": []}],
+                                "image": "string",
+                                "instanceType": "string",
+                                "javaOptions": "string",
+                                "labels": {
+                                    "property1": "string",
+                                    "property2": "string",
+                                },
+                                "memory": "string",
+                                "memoryOverhead": "string",
+                                "podName": "string",
+                                "podSecurityContext": {
+                                    "fsGroup": 0,
+                                    "runAsGroup": 0,
+                                    "runAsNonRoot": True,
+                                    "runAsUser": 0,
+                                    "seLinuxOptions": {},
+                                    "supplementalGroups": [],
+                                    "sysctls": [],
+                                    "windowsOptions": {},
+                                },
+                                "secrets": [{}],
+                                "securityContext": {
+                                    "allowPrivilegeEscalation": True,
+                                    "capabilities": {"add": [], "drop": []},
+                                    "privileged": True,
+                                    "procMount": "string",
+                                    "readOnlyRootFilesystem": True,
+                                    "runAsGroup": 0,
+                                    "runAsNonRoot": True,
+                                    "runAsUser": 0,
+                                    "seLinuxOptions": {},
+                                    "windowsOptions": {},
+                                },
+                                "spot": True,
+                                "tolerations": [{}],
+                                "volumeMounts": [{}],
+                            },
+                            "executor": {
+                                "affinity": {
+                                    "nodeAffinity": {
+                                        "preferredDuringSchedulingIgnoredDuringExecution": []
+                                    },
+                                    "podAffinity": {
+                                        "preferredDuringSchedulingIgnoredDuringExecution": [],
+                                        "requiredDuringSchedulingIgnoredDuringExecution": [],
+                                    },
+                                    "podAntiAffinity": {
+                                        "preferredDuringSchedulingIgnoredDuringExecution": [],
+                                        "requiredDuringSchedulingIgnoredDuringExecution": [],
+                                    },
+                                },
+                                "annotations": {
+                                    "property1": "string",
+                                    "property2": "string",
+                                },
+                                "configMaps": [{}],
+                                "coreLimit": "string",
+                                "coreRequest": "string",
+                                "cores": 0,
+                                "envSecretKeyRefs": {
+                                    "property1": {},
+                                    "property2": {},
+                                },
+                                "envVars": {
+                                    "property1": "string",
+                                    "property2": "string",
+                                },
+                                "hostAliases": [{"hostnames": []}],
+                                "image": "string",
+                                "instanceType": "string",
+                                "instances": 0,
+                                "javaOptions": "string",
+                                "labels": {
+                                    "property1": "string",
+                                    "property2": "string",
+                                },
+                                "memory": "string",
+                                "memoryOverhead": "string",
+                                "podSecurityContext": {
+                                    "fsGroup": 0,
+                                    "runAsGroup": 0,
+                                    "runAsNonRoot": True,
+                                    "runAsUser": 0,
+                                    "seLinuxOptions": {},
+                                    "supplementalGroups": [],
+                                    "sysctls": [],
+                                    "windowsOptions": {},
+                                },
+                                "secrets": [{}],
+                                "securityContext": {
+                                    "allowPrivilegeEscalation": True,
+                                    "capabilities": {"add": [], "drop": []},
+                                    "privileged": True,
+                                    "procMount": "string",
+                                    "readOnlyRootFilesystem": True,
+                                    "runAsGroup": 0,
+                                    "runAsNonRoot": True,
+                                    "runAsUser": 0,
+                                    "seLinuxOptions": {},
+                                    "windowsOptions": {},
+                                },
+                                "spot": True,
+                                "tolerations": [{}],
+                                "volumeMounts": [{}],
+                            },
+                            "hadoopConf": {
+                                "property1": "string",
+                                "property2": "string",
+                            },
+                            "hadoopConfigMap": "string",
+                            "image": "string",
+                            "imagePullPolicy": "string",
+                            "imagePullSecrets": ["string"],
+                            "initContainerImage": "string",
+                            "mainApplicationFile": "string",
+                            "mainClass": "string",
+                            "memoryOverheadFactor": "string",
+                            "pythonVersion": "3",
+                            "sparkConf": {
+                                "property1": "string",
+                                "property2": "string",
+                            },
+                            "sparkConfigMap": "string",
+                            "sparkVersion": "string",
+                            "timeToLiveSeconds": 0,
+                            "type": "Java",
+                            "volumes": [
+                                {
+                                    "awsElasticBlockStore": {},
+                                    "azureDisk": {},
+                                    "azureFile": {},
+                                    "cephfs": {"monitors": []},
+                                    "cinder": {},
+                                    "configMap": {"items": []},
+                                    "csi": {"volumeAttributes": {}},
+                                    "downwardAPI": {"items": []},
+                                    "emptyDir": {},
+                                    "fc": {"targetWWNs": [], "wwids": []},
+                                    "flexVolume": {"options": {}},
+                                    "flocker": {},
+                                    "gcePersistentDisk": {},
+                                    "gitRepo": {},
+                                    "glusterfs": {},
+                                    "hostPath": {},
+                                    "iscsi": {"portals": []},
+                                    "name": "string",
+                                    "nfs": {},
+                                    "persistentVolumeClaim": {},
+                                    "photonPersistentDisk": {},
+                                    "portworxVolume": {},
+                                    "projected": {"sources": []},
+                                    "quobyte": {},
+                                    "rbd": {"monitors": []},
+                                    "scaleIO": {},
+                                    "secret": {"items": []},
+                                    "storageos": {},
+                                    "vsphereVolume": {},
+                                }
+                            ],
+                        },
+                        "startedAt": "2021-11-18T17:09:37+00:00",
+                        "endedAt": "2021-11-18T17:09:37+00:00",
+                        "log": {
+                            "logsStreamUrl": "/ocean/spark/cluster/cluster-id/app/daily-reporting-2021-08-18/logs/live",
+                            "kubeEventsStreamUrl": "/ocean/spark/cluster/cluster-id/app/daily-reporting-2021-08-18/kubeEvents/live",
+                        },
+                        "metrics": {
+                            "cost": {
+                                "createdAt": "2018-10-10T10:50:29.000+0000",
+                                "updatedAt": "2018-10-10T10:50:29.000+0000",
+                                "total": 0,
+                            },
+                            "spark": {
+                                "createdAt": "2018-10-10T10:50:29.000+0000",
+                                "updatedAt": "2018-10-10T10:50:29.000+0000",
+                                "sparkCoresDurationSeconds": 0,
+                                "inputDataBytes": 0,
+                                "outputDataBytes": 0,
+                                "durationSeconds": 0,
+                                "efficiencyPercent": 0,
+                            },
+                        },
+                    }
+                ],
+                "count": 1,
+                "kind": "spotinst:ocean:spark:application",
+            },
+        },
+    )
+
+
+@pytest.fixture(scope="function")
 def get_connection_mock(mocker: MockerFixture) -> unittest.mock.MagicMock:
     mock = mocker.patch(
         "ocean_spark.hooks.OceanSparkHook." "get_connection",
@@ -852,3 +1113,27 @@ def get_connection_mock(mocker: MockerFixture) -> unittest.mock.MagicMock:
         password="test-api-key",
     )
     return mock
+
+
+@pytest.fixture(scope="function")
+def successful_logs_download(requests_mock: RequestsMocker) -> None:
+    requests_mock.real_http = True
+    requests_mock.register_uri(
+        "GET",
+        re.compile(
+            r"^https://api.spotinst.io/ocean/spark/cluster/.*/app/.*/log/live[^\/]*$"
+        ),
+        status_code=200,
+        headers={"content-type": "text/plain"},
+        content=(
+            b"24/08/23 21:01:29 INFO SparkContext: Running Spark version 3.5.1\n"
+            b"24/08/23 21:01:29 INFO SparkContext: Submitted application: inc-load-taggings\n"
+            b"24/08/23 21:01:31 INFO SparkEnv: Registering BlockManagerMaster\n"
+            b"2024-08-15T20:41:22.434924514Z\n"
+            b"2024-08-15T20:41:22.434927854Z Traceback (most recent call last):\n"
+            b'2024-08-15T20:41:22.434931134Z   File "/opt/spark/work-dir/main.py", line 82, in <module>\n'
+            b'2024-08-15T20:41:22.434934383Z     raise ProcessingError("Error processing one or more tables.")\n'
+            b"2024-08-15T20:41:22.434937463Z __main__.ProcessingError: Error processing one or more tables.\n"
+            b"24/08/23 21:05:57 INFO ShutdownHookManager: Shutdown hook called\n"
+        ),
+    )
