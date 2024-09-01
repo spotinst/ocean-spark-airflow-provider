@@ -11,10 +11,6 @@ from airflow.exceptions import AirflowException
 
 from urllib.parse import urljoin
 
-from requests import exceptions as requests_exceptions
-
-from ocean_spark.response import ApiResponse
-
 from ocean_spark.connect.inverse_websockify import Proxy
 import threading
 
@@ -48,7 +44,7 @@ class OceanSparkConnectHook(BaseHook):
         self.spark = SparkSession.builder.remote("sc://localhost").getOrCreate()
 
     def inverse_websockify(self, url: str, loop: AbstractEventLoop) -> None:
-        proxy = Proxy(url, self.token)
+        proxy = Proxy(url, self.token, -1)
         loop.run_until_complete(proxy.start())
         loop.run_forever()
 
