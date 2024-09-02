@@ -28,6 +28,7 @@ apache-airflow = ">=1"
 requests = "^2.0.0"
 websockets = "^11.0.3"
 pyspark = "^3.0.1"
+packaging = ">=21.0"
 
 
 [tool.poetry.dev-dependencies]
