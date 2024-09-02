@@ -84,18 +84,18 @@ class OceanSparkConnectHook(BaseHook):
     @staticmethod
     def get_ui_field_behaviour() -> Dict:
         return {
-            "hidden_fields": ["extra", "schema"],
+            "hidden_fields": ["extra", "port"],
             "relabeling": {
                 "password": "API token",
                 "host": "Cluster id",
                 "login": "Account id",
-                "port": "Application Id",
+                "schema": "Application Id",
             },
             "placeholders": {
                 "host": "ocean spark cluster id",
                 "password": "Ocean API token",
                 "login": "Ocean Spot account id",
-                "port": "Ocean Spark Application Id",
+                "schema": "Ocean Spark Application Id",
             },
         }
 
