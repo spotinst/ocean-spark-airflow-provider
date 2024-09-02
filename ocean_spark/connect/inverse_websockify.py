@@ -41,7 +41,6 @@ and configure the client with e.g.
   address 127.0.0.1:15002
 """
 
-import sys
 import os
 import asyncio
 import logging
@@ -52,7 +51,9 @@ from typing import Any, List
 
 class Proxy:
     def __init__(self, url: str, token: str, port: int = 15002, addr: str = "0.0.0.0", ping_interval: float = -1.0):
+        logging.info("Initializing proxy")
         if port == -1 and not addr.startswith("/"):
+            logging.info("Port is -1 and address is not a unix socket, creating a unix socket")
             pid = str(os.getpid())
             rnd = os.urandom(4).hex()
             self.addr = f"/tmp/ocean-spark-{pid}-{rnd}.sock"
@@ -126,36 +127,3 @@ class Proxy:
             await asyncio.start_unix_server(self.handle_client, self.addr)
         else:
             await asyncio.start_server(self.handle_client, self.addr, self.port)
-
-
-def main(argv: List[str]) -> None:
-    import argparse
-    import textwrap
-
-    parser = argparse.ArgumentParser(
-        prog=argv[0],
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=textwrap.indent(desc.format(prog=argv[0]), prefix="    "),
-    )
-
-    parser.add_argument(
-        "--port", "-p", metavar="PORT", default=15002, help="TCP listen port"
-    )
-    parser.add_argument(
-        "--listen", "-l", metavar="ADDR", default="0.0.0.0", help="TCP listen address"
-    )
-    parser.add_argument(
-        "--token", metavar="TOKEN", default=None, help="WebSocket token"
-    )
-    parser.add_argument(
-        "url", metavar="URL", help="WebSocket URL (ws://.. or wss://..)"
-    )
-
-    args = parser.parse_args()
-
-    proxy = Proxy(args.url, args.token, args.port, args.listen)
-    proxy.inverse_websockify()
-
-
-if __name__ == "__main__":
-    main(sys.argv)

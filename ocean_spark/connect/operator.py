@@ -1,6 +1,6 @@
 from ocean_spark.extra_links import OceanSparkApplicationOverviewLink
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 from airflow.models import BaseOperator
 from airflow.utils.context import Context
@@ -20,7 +20,6 @@ class OceanSparkConnectOperator(BaseOperator):
 
     # Used in airflow.models.BaseOperator
     template_fields = (
-        "app_id",
         "sql",
         "job_id",
     )
