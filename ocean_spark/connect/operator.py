@@ -1,7 +1,9 @@
+from ocean_spark.connect.spark_connect_trigger import SparkConnectTrigger
 from ocean_spark.extra_links import OceanSparkApplicationOverviewLink
 
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 
+from airflow.configuration import conf
 from airflow.models import BaseOperator
 from airflow.utils.context import Context
 from ocean_spark.connect.hook import (
@@ -39,6 +41,7 @@ class OceanSparkConnectOperator(BaseOperator):
         on_spark_submit_callback: Optional[
             Callable[[OceanSparkConnectHook, str, Context], None]
         ] = None,
+        deferrable: bool = conf.getboolean("operators", "default_deferrable", fallback=False),
         **kwargs: Any,
     ):
         """
@@ -46,6 +49,7 @@ class OceanSparkConnectOperator(BaseOperator):
         """
         super().__init__(**kwargs)
 
+        self.deferrable = deferrable
         self.conn_id = conn_id
         self.sql = sql
         self.job_id: Optional[str] = job_id
@@ -67,12 +71,22 @@ class OceanSparkConnectOperator(BaseOperator):
         )
 
     def execute(self, context: Context) -> None:
-        self.hook.execute(self.sql)
-        if self.on_spark_submit_callback:
-            try:
-                self.on_spark_submit_callback(self.hook, self.hook.app_id, context)
-            except Exception as err:
-                self.log.exception(err)
+        if self.deferrable:
+            self.defer(
+                trigger=SparkConnectTrigger(self.sql),
+                method_name="execute_complete",
+            )
+        else:
+            self.hook.execute(self.sql)
+            if self.on_spark_submit_callback:
+                try:
+                    self.on_spark_submit_callback(self.hook, self.hook.app_id, context)
+                except Exception as err:
+                    self.log.exception(err)
+                    
+    def execute_complete(self, context: Context, event: dict[str, Any] | None = None) -> None:
+        # We have no more work to do here. Mark as complete
+        return
 
     def on_kill(self) -> None:
         self.hook.kill_task()
