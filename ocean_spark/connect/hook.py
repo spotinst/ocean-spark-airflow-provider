@@ -1,4 +1,3 @@
-import multiprocessing
 from multiprocessing import Process
 from typing import Dict, Any
 import grpc
@@ -21,8 +20,6 @@ FE_HOST = "https://console.spotinst.com/ocean/spark/"
 USER_AGENT_HEADER = {"user-agent": f"airflow-{airflow_version}"}
 
 DEFAULT_CONN_NAME = "ocean_spark_connect_default"
-
-multiprocessing.set_start_method("fork", force=True)
 
 class OceanChannelBuilder(ChannelBuilder):
     def __init__(self, url: str, bind_address: str):
