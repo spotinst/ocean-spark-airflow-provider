@@ -21,6 +21,7 @@ USER_AGENT_HEADER = {"user-agent": f"airflow-{airflow_version}"}
 
 DEFAULT_CONN_NAME = "ocean_spark_connect_default"
 
+
 class OceanChannelBuilder(ChannelBuilder):
     def __init__(self, url: str, bind_address: str):
         super().__init__(url)
@@ -32,6 +33,7 @@ class OceanChannelBuilder(ChannelBuilder):
         else:
             channel = super().toChannel()
         return channel
+
 
 class OceanSparkConnectHook(BaseHook):
     conn_name_attr: str = "ocean_spark_connect_conn_id"
@@ -63,7 +65,9 @@ class OceanSparkConnectHook(BaseHook):
         _process.start()
 
         self.log.info(f"Starting Spark session on {_proxy.addr}")
-        channel_builder = OceanChannelBuilder(f"sc://localhost:{_proxy.port}", _proxy.addr)
+        channel_builder = OceanChannelBuilder(
+            f"sc://localhost:{_proxy.port}", _proxy.addr
+        )
         spark = SparkSession.Builder().channelBuilder(channel_builder).getOrCreate()
         try:
             self.log.info(f"Executing SQL: {sql}")

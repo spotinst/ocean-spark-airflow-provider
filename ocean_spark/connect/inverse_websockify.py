@@ -50,10 +50,19 @@ from typing import Any, List
 
 
 class Proxy:
-    def __init__(self, url: str, token: str, port: int = 15002, addr: str = "0.0.0.0", ping_interval: float = -1.0):
+    def __init__(
+        self,
+        url: str,
+        token: str,
+        port: int = 15002,
+        addr: str = "0.0.0.0",
+        ping_interval: float = -1.0,
+    ):
         logging.info("Initializing proxy")
         if port == -1 and not addr.startswith("/"):
-            logging.info("Port is -1 and address is not a unix socket, creating a unix socket")
+            logging.info(
+                "Port is -1 and address is not a unix socket, creating a unix socket"
+            )
             pid = str(os.getpid())
             rnd = os.urandom(4).hex()
             self.addr = f"/tmp/ocean-spark-{pid}-{rnd}.sock"
@@ -94,7 +103,9 @@ class Proxy:
                 subprotocols=None,
                 extra_headers={"Authorization": f"Bearer {self.token}"},
             ) as ws:
-                logging.debug(f"{peer} connected to {self.url} on {self.addr}:{self.port}")
+                logging.debug(
+                    f"{peer} connected to {self.url} on {self.addr}:{self.port}"
+                )
 
                 def r_reader() -> Any:
                     return r.read(65536)
