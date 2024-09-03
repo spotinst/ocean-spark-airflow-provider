@@ -1,6 +1,6 @@
 from multiprocessing import Process
 from typing import Dict, Any
-import grpc
+import grpc  # type: ignore
 from pyspark.sql.connect.session import SparkSession
 from pyspark.sql.connect.client import ChannelBuilder
 
