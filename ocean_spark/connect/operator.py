@@ -62,7 +62,6 @@ class OceanSparkConnectOperator(BaseOperator):
     def _get_hook(self) -> OceanSparkConnectHook:
         return OceanSparkConnectHook(
             self.conn_id,
-            sql=self.sql,
         )
 
     def execute(self, context: Context) -> None:

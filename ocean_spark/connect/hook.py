@@ -1,6 +1,6 @@
-import logging
+import multiprocessing
+from multiprocessing import Process
 from typing import Dict, Any
-from asyncio.events import AbstractEventLoop
 import grpc
 from pyspark.sql.connect.session import SparkSession
 from pyspark.sql.connect.client import ChannelBuilder
@@ -14,15 +14,15 @@ from airflow.exceptions import AirflowException
 from urllib.parse import urljoin
 
 from ocean_spark.connect.inverse_websockify import Proxy
-from multiprocessing import Process
 
 API_HOST = "wss://api.spotinst.io/ocean/spark/"
 FE_HOST = "https://console.spotinst.com/ocean/spark/"
 
 USER_AGENT_HEADER = {"user-agent": f"airflow-{airflow_version}"}
 
-DEFAULT_CONN_NAME = "ocean_spark_default"
+DEFAULT_CONN_NAME = "ocean_spark_connect_default"
 
+multiprocessing.set_start_method("fork", force=True)
 
 class OceanChannelBuilder(ChannelBuilder):
     def __init__(self, url: str, bind_address: str):
@@ -45,7 +45,6 @@ class OceanSparkConnectHook(BaseHook):
     def __init__(
         self,
         ocean_spark_connect_conn_id: str = "ocean_spark_connect_default",
-        sql: str = "select 1",
     ):
         super().__init__()
         self.conn_id = ocean_spark_connect_conn_id
@@ -53,8 +52,7 @@ class OceanSparkConnectHook(BaseHook):
         self.token = self.conn.password
         self.cluster_id = self.conn.host
         self.account_id = self.conn.login
-        self.app_id = self.conn.port
-        self.sql = sql
+        self.app_id = self.conn.schema
 
     def execute(self, sql: str) -> None:
         path = urljoin(
@@ -62,7 +60,7 @@ class OceanSparkConnectHook(BaseHook):
             f"cluster/{self.cluster_id}/app/{self.app_id}/connect?accountId={self.account_id}",
         )
 
-        self.log.info("Starting inverse websockify")
+        self.log.info(f"Starting inverse websockify {path}")
         _proxy = Proxy(path, self.token, -1, "0.0.0.0", -1)
         _process = Process(target=_proxy.inverse_websockify, args=())
         _process.start()
