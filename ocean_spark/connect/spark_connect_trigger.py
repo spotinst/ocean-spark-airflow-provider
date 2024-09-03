@@ -8,7 +8,7 @@ from ocean_spark.connect.hook import OceanChannelBuilder
 
 from ocean_spark.connect.inverse_websockify import Proxy
 
-API_HOST = "wss://api.spotinst.io/ocean/spark/"
+from ocean_spark.connect.hook import API_HOST
 
 class SparkConnectTrigger(BaseTrigger):
     def __init__(self, sql, token, cluster_id, account_id, app_id):
