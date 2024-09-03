@@ -27,8 +27,9 @@ python = "^3.7"
 apache-airflow = ">=1"
 requests = "^2.0.0"
 websockets = { version = "^13.0.1", python = "^3.8" }
-grpcio = { version =  ">=1.56.4", python = "^3.8" }
-googleapis-common-protos = { version = ">=1.65.0", python = "^3.8" }
+grpcio = { version =  ">=1.50.0", python = "^3.8" }
+grpcio-status = { version =  ">=1.48.2", python = "^3.8" }
+googleapis-common-protos = { version = ">=1.56.4", python = "^3.8" }
 pandas = { version = ">=1.5.1", python = "^3.8" }
 pyarrow = { version = "*", python = "^3.8" }
 pyspark = { version = ">=3.3.1", python = "^3.8" }

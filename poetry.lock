@@ -1677,6 +1677,22 @@ files = [
 protobuf = ["grpcio-tools (>=1.66.1)"]
 
 [[package]]
+name = "grpcio-status"
+version = "1.66.1"
+description = "Status proto mapping for gRPC"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "grpcio_status-1.66.1-py3-none-any.whl", hash = "sha256:cf9ed0b4a83adbe9297211c95cb5488b0cd065707e812145b842c85c4782ff02"},
+    {file = "grpcio_status-1.66.1.tar.gz", hash = "sha256:b3f7d34ccc46d83fea5261eea3786174459f763c31f6e34f1d24eba6d515d024"},
+]
+
+[package.dependencies]
+googleapis-common-protos = ">=1.5.5"
+grpcio = ">=1.66.1"
+protobuf = ">=5.26.1,<6.0dev"
+
+[[package]]
 name = "gunicorn"
 version = "23.0.0"
 description = "WSGI HTTP Server for UNIX"
@@ -4050,4 +4066,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "15b51143117f1e8bdcfbc1d5ff9802425a01a5377dd94e11213b844cd0bb3b7f"
+content-hash = "89854f1889be137c8ba5180d4778cea5666e13b90d495ccd4a6fa1bf6eb1ec05"
