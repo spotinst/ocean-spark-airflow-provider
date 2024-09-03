@@ -1,7 +1,8 @@
+from multiprocessing import Process
 from typing import Dict, Any
-import asyncio
-from asyncio.events import AbstractEventLoop
-from pyspark.sql import SparkSession
+import grpc
+from pyspark.sql.connect.session import SparkSession
+from pyspark.sql.connect.client import ChannelBuilder
 
 from airflow import __version__ as airflow_version
 
@@ -12,14 +13,26 @@ from airflow.exceptions import AirflowException
 from urllib.parse import urljoin
 
 from ocean_spark.connect.inverse_websockify import Proxy
-import threading
 
 API_HOST = "wss://api.spotinst.io/ocean/spark/"
 FE_HOST = "https://console.spotinst.com/ocean/spark/"
 
 USER_AGENT_HEADER = {"user-agent": f"airflow-{airflow_version}"}
 
-DEFAULT_CONN_NAME = "ocean_spark_default"
+DEFAULT_CONN_NAME = "ocean_spark_connect_default"
+
+
+class OceanChannelBuilder(ChannelBuilder):
+    def __init__(self, url: str, bind_address: str):
+        super().__init__(url)
+        self._bind_address = bind_address
+
+    def toChannel(self) -> grpc.Channel:
+        if self._bind_address.startswith("/"):
+            channel = grpc.insecure_channel("unix:" + self._bind_address)
+        else:
+            channel = super().toChannel()
+        return channel
 
 
 class OceanSparkConnectHook(BaseHook):
@@ -31,7 +44,6 @@ class OceanSparkConnectHook(BaseHook):
     def __init__(
         self,
         ocean_spark_connect_conn_id: str = "ocean_spark_connect_default",
-        sql: str = "select 1",
     ):
         super().__init__()
         self.conn_id = ocean_spark_connect_conn_id
@@ -39,13 +51,7 @@ class OceanSparkConnectHook(BaseHook):
         self.token = self.conn.password
         self.cluster_id = self.conn.host
         self.account_id = self.conn.login
-        self.app_id = self.conn.port
-        self.sql = sql
-
-    def inverse_websockify(self, url: str, loop: AbstractEventLoop) -> None:
-        proxy = Proxy(url, self.token)
-        loop.run_until_complete(proxy.start())
-        loop.run_forever()
+        self.app_id = self.conn.schema
 
     def execute(self, sql: str) -> None:
         path = urljoin(
@@ -53,23 +59,31 @@ class OceanSparkConnectHook(BaseHook):
             f"cluster/{self.cluster_id}/app/{self.app_id}/connect?accountId={self.account_id}",
         )
 
-        loop = asyncio.get_event_loop()
-        my_thread = threading.Thread(target=self.inverse_websockify, args=(path, loop))
-        my_thread.start()
+        self.log.info(f"Starting inverse websockify {path}")
+        _proxy = Proxy(path, self.token, -1, "0.0.0.0", -1)
+        _process = Process(target=_proxy.inverse_websockify, args=())
+        _process.start()
 
-        spark = SparkSession.builder.remote("sc://localhost").getOrCreate()
+        self.log.info(f"Starting Spark session on {_proxy.addr}")
+        channel_builder = OceanChannelBuilder(
+            f"sc://localhost:{_proxy.port}", _proxy.addr
+        )
+        spark = SparkSession.Builder().channelBuilder(channel_builder).getOrCreate()
         try:
+            self.log.info(f"Executing SQL: {sql}")
             spark.sql(sql).show()
+            self.log.info("SQL executed successfully")
         except Exception as e:
             self.log.error(e)
             raise AirflowException(e)
         finally:
+            self.log.info("Stopping Spark session")
             spark.stop()
-            loop.stop()
-            my_thread.join()
+            _process.kill()
+            self.log.info("Job done")
 
     def kill_task(self) -> None:
-        self.spark.stop()
+        pass
 
     def get_app_page_url(self) -> str:
         url = urljoin(
@@ -81,18 +95,18 @@ class OceanSparkConnectHook(BaseHook):
     @staticmethod
     def get_ui_field_behaviour() -> Dict:
         return {
-            "hidden_fields": ["extra", "schema"],
+            "hidden_fields": ["extra", "port"],
             "relabeling": {
                 "password": "API token",
                 "host": "Cluster id",
                 "login": "Account id",
-                "port": "Application Id",
+                "schema": "Application Id",
             },
             "placeholders": {
                 "host": "ocean spark cluster id",
                 "password": "Ocean API token",
                 "login": "Ocean Spot account id",
-                "port": "Ocean Spark Application Id",
+                "schema": "Ocean Spark Application Id",
             },
         }
 

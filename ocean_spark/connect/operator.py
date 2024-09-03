@@ -1,7 +1,7 @@
 from ocean_spark.connect.spark_connect_trigger import SparkConnectTrigger
 from ocean_spark.extra_links import OceanSparkApplicationOverviewLink
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 from airflow.configuration import conf
 from airflow.models import BaseOperator
@@ -22,7 +22,6 @@ class OceanSparkConnectOperator(BaseOperator):
 
     # Used in airflow.models.BaseOperator
     template_fields = (
-        "app_id",
         "sql",
         "job_id",
     )
@@ -67,7 +66,6 @@ class OceanSparkConnectOperator(BaseOperator):
     def _get_hook(self) -> OceanSparkConnectHook:
         return OceanSparkConnectHook(
             self.conn_id,
-            sql=self.sql,
         )
 
     def execute(self, context: Context) -> None:
