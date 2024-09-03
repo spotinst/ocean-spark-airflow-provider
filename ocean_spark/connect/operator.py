@@ -71,7 +71,7 @@ class OceanSparkConnectOperator(BaseOperator):
     def execute(self, context: Context) -> None:
         if self.deferrable:
             self.defer(
-                trigger=SparkConnectTrigger(self.sql),
+                trigger=SparkConnectTrigger(self.sql, self.hook.token, self.hook.cluster_id, self.hook.account_id, self.hook.app_id),
                 method_name="execute_complete",
             )
         else:
