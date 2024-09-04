@@ -1,4 +1,6 @@
 from multiprocessing import Process
+from typing import AsyncGenerator
+
 from airflow.triggers.base import BaseTrigger, TriggerEvent
 from airflow.exceptions import AirflowException
 from urllib.parse import urljoin
@@ -10,8 +12,11 @@ from ocean_spark.connect.inverse_websockify import Proxy
 
 from ocean_spark.connect.hook import API_HOST
 
+
 class SparkConnectTrigger(BaseTrigger):
-    def __init__(self, sql, token, cluster_id, account_id, app_id):
+    def __init__(
+        self, sql: str, token: str, cluster_id: str, account_id: str, app_id: str
+    ):
         super().__init__()
         self.sql = sql
         self.token = token
@@ -19,10 +24,16 @@ class SparkConnectTrigger(BaseTrigger):
         self.account_id = account_id
         self.app_id = app_id
 
-    def serialize(self):
-        return "ocean_spark.connect.spark_connect_trigger.SparkConnectTrigger", {"sql": self.sql, "token": self.token, "cluster_id": self.cluster_id, "account_id": self.account_id, "app_id": self.app_id}
-    
-    async def run(self):
+    def serialize(self) -> tuple[str, dict[str, str]]:
+        return "ocean_spark.connect.spark_connect_trigger.SparkConnectTrigger", {
+            "sql": self.sql,
+            "token": self.token,
+            "cluster_id": self.cluster_id,
+            "account_id": self.account_id,
+            "app_id": self.app_id,
+        }
+
+    async def run(self) -> AsyncGenerator[TriggerEvent, None]:
         path = urljoin(
             API_HOST,
             f"cluster/{self.cluster_id}/app/{self.app_id}/connect?accountId={self.account_id}",
@@ -50,5 +61,5 @@ class SparkConnectTrigger(BaseTrigger):
             spark.stop()
             _process.kill()
             self.log.info("Job done")
-        
+
         yield TriggerEvent(self.sql)

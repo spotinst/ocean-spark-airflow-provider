@@ -40,7 +40,9 @@ class OceanSparkConnectOperator(BaseOperator):
         on_spark_submit_callback: Optional[
             Callable[[OceanSparkConnectHook, str, Context], None]
         ] = None,
-        deferrable: bool = conf.getboolean("operators", "default_deferrable", fallback=False),
+        deferrable: bool = conf.getboolean(
+            "operators", "default_deferrable", fallback=False
+        ),
         **kwargs: Any,
     ):
         """
@@ -71,7 +73,13 @@ class OceanSparkConnectOperator(BaseOperator):
     def execute(self, context: Context) -> None:
         if self.deferrable:
             self.defer(
-                trigger=SparkConnectTrigger(self.sql, self.hook.token, self.hook.cluster_id, self.hook.account_id, self.hook.app_id),
+                trigger=SparkConnectTrigger(
+                    self.sql,
+                    self.hook.token,
+                    self.hook.cluster_id,
+                    self.hook.account_id,
+                    self.hook.app_id,
+                ),
                 method_name="execute_complete",
             )
         else:
@@ -81,8 +89,10 @@ class OceanSparkConnectOperator(BaseOperator):
                     self.on_spark_submit_callback(self.hook, self.hook.app_id, context)
                 except Exception as err:
                     self.log.exception(err)
-                    
-    def execute_complete(self, context: Context, event: dict[str, Any] | None = None) -> None:
+
+    def execute_complete(
+        self, context: Context, event: dict[str, Any] | None = None
+    ) -> None:
         # We have no more work to do here. Mark as complete
         return
 
