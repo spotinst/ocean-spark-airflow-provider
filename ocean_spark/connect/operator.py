@@ -91,7 +91,7 @@ class OceanSparkConnectOperator(BaseOperator):
                     self.log.exception(err)
 
     def execute_complete(
-        self, context: Context, event: dict[str, Any] | None = None
+        self, context: Context, event: Optional[dict[str, Any]] = None
     ) -> None:
         # We have no more work to do here. Mark as complete
         return
