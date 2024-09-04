@@ -41,23 +41,47 @@ and configure the client with e.g.
   address 127.0.0.1:15002
 """
 
-import sys
-
+import os
 import asyncio
-from websockets import client as ws_client
+import logging
+import websockets
 
 from typing import Any, List
 
 
 class Proxy:
-    def __init__(self, url: str, token: str, port: int = 15002, addr: str = "0.0.0.0"):
+    def __init__(
+        self,
+        url: str,
+        token: str,
+        port: int = 15002,
+        addr: str = "0.0.0.0",
+        ping_interval: float = -1.0,
+    ):
+        logging.info("Initializing proxy")
+        if port == -1 and not addr.startswith("/"):
+            logging.info(
+                "Port is -1 and address is not a unix socket, creating a unix socket"
+            )
+            pid = str(os.getpid())
+            rnd = os.urandom(4).hex()
+            self.addr = f"/tmp/ocean-spark-{pid}-{rnd}.sock"
+        else:
+            self.addr = addr
+
+        self.ping_interval = ping_interval
         self.port = port
-        self.addr = addr
         self.token = token
         self.url = url
+        self.done = False
+        self.loop = asyncio.new_event_loop()
+
+    def inverse_websockify(self) -> None:
+        self.loop.run_until_complete(self.start())
+        self.loop.run_forever()
 
     async def copy(self, reader: Any, writer: Any) -> None:
-        while True:
+        while not self.done:
             data = await reader()
             if data == b"":
                 break
@@ -65,25 +89,36 @@ class Proxy:
             if future:
                 await future
 
+    async def ping(self, ws: Any) -> None:
+        while not self.done:
+            await asyncio.sleep(self.ping_interval)
+            await ws.ping()
+
     async def handle_client(self, r: Any, w: Any) -> None:
         peer = w.get_extra_info("peername")
-        print(f"{peer} connected")
-        loop = asyncio.get_event_loop()
         try:
-            async with ws_client.connect(
+            async with websockets.connect(
                 self.url,
                 subprotocols=None,
                 extra_headers={"Authorization": f"Bearer {self.token}"},
             ) as ws:
-                print(f"{peer} connected to {self.url}")
+                logging.debug(
+                    f"{peer} connected to {self.url} on {self.addr}:{self.port}"
+                )
 
                 def r_reader() -> Any:
                     return r.read(65536)
 
-                tcp_to_ws = loop.create_task(self.copy(r_reader, ws.send))
-                ws_to_tcp = loop.create_task(self.copy(ws.recv, w.write))
+                tcp_to_ws = self.loop.create_task(self.copy(r_reader, ws.send))
+                ws_to_tcp = self.loop.create_task(self.copy(ws.recv, w.write))
+
+                task_list = [tcp_to_ws, ws_to_tcp]
+                if self.ping_interval > 0:
+                    ping_task = self.loop.create_task(self.ping(ws))
+                    task_list.append(ping_task)
+
                 done, pending = await asyncio.wait(
-                    [tcp_to_ws, ws_to_tcp], return_when=asyncio.FIRST_COMPLETED
+                    task_list, return_when=asyncio.FIRST_COMPLETED
                 )
                 for x in done:
                     try:
@@ -93,45 +128,12 @@ class Proxy:
                 for x in pending:
                     x.cancel()
         except Exception as e:
-            print(f"{peer} exception:", e)
+            logging.error(f"{peer} exception:", e)
         w.close()
-        print(f"{peer} closed")
+        logging.debug(f"{peer} closed")
 
     async def start(self) -> None:
-        await asyncio.start_server(self.handle_client, self.addr, self.port)
-        print(f"Listening on {self.addr} port {self.port}")
-
-
-def main(argv: List[str]) -> None:
-    import argparse
-    import textwrap
-
-    parser = argparse.ArgumentParser(
-        prog=argv[0],
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=textwrap.indent(desc.format(prog=argv[0]), prefix="    "),
-    )
-
-    parser.add_argument(
-        "--port", "-p", metavar="PORT", default=15002, help="TCP listen port"
-    )
-    parser.add_argument(
-        "--listen", "-l", metavar="ADDR", default="0.0.0.0", help="TCP listen address"
-    )
-    parser.add_argument(
-        "--token", metavar="TOKEN", default=None, help="WebSocket token"
-    )
-    parser.add_argument(
-        "url", metavar="URL", help="WebSocket URL (ws://.. or wss://..)"
-    )
-
-    args = parser.parse_args()
-
-    loop = asyncio.get_event_loop()
-    proxy = Proxy(args.url, args.token, args.port, args.listen)
-    loop.run_until_complete(proxy.start())
-    loop.run_forever()
-
-
-if __name__ == "__main__":
-    main(sys.argv)
+        if self.addr.startswith("/"):
+            await asyncio.start_unix_server(self.handle_client, self.addr)
+        else:
+            await asyncio.start_server(self.handle_client, self.addr, self.port)

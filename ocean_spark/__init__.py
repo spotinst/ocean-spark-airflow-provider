@@ -1,3 +1,4 @@
+from packaging import version
 from typing import Dict
 
 from airflow import __version__
@@ -33,7 +34,7 @@ def get_provider_info() -> Dict:
     }
 
     # Pyspark 3.4.0 (that allow spark Connect) is only available from Airflow 2.6.2
-    if __version__ >= "2.6.2":
+    if version.parse(__version__) >= version.parse("2.6.2"):
         info["hook-class-names"] = [
             "ocean_spark.hooks.OceanSparkHook",
             "ocean_spark.hooks.OceanSparkConnectHook",
