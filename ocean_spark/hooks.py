@@ -1,7 +1,7 @@
 import json
 from datetime import timedelta
+from packaging import version
 from typing import Callable, Dict, Any, Tuple, Optional
-
 
 from airflow.hooks.base import BaseHook
 
@@ -45,7 +45,7 @@ USER_AGENT_HEADER = {"user-agent": "airflow-{v}".format(v=__version__)}
 DEFAULT_CONN_NAME = "ocean_spark_default"
 
 # Pyspark 3.4.0 (that allow spark Connect) is only available from Airflow 2.6.2
-if __version__ >= "2.6.2":
+if version.parse(__version__) >= version.parse("2.6.2"):
     from ocean_spark.connect.hook import OceanSparkConnectHook  # noqa: F401
 
 
