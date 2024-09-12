@@ -1,3 +1,4 @@
+from packaging import version
 from typing import List, Any
 
 from airflow import __version__
@@ -22,7 +23,7 @@ _operatorList: Any = [OceanSparkOperator]
 _hookList: Any = [OceanSparkHook]
 
 # Pyspark 3.4.0 (that allow spark Connect) is only available from Airflow 2.6.2
-if __version__ >= "2.6.2":
+if version.parse(__version__) >= version.parse("2.6.2"):
     from ocean_spark.hooks import OceanSparkConnectHook
     from ocean_spark.operators import OceanSparkConnectOperator
 

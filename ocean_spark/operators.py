@@ -1,6 +1,7 @@
 from datetime import timedelta
 import json
 from ocean_spark.extra_links import OceanSparkApplicationOverviewLink
+from packaging import version
 import time
 
 from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
@@ -23,7 +24,7 @@ XCOM_APP_PAGE_URL_KEY = "app_page_url"
 MAX_FWD_DRIVER_LOGS = 256
 
 # Pyspark 3.4.0 (that allow spark Connect) is only available from Airflow 2.6.2
-if __version__ >= "2.6.2":
+if version.parse(__version__) >= version.parse("2.6.2"):
     from ocean_spark.connect.operator import OceanSparkConnectOperator  # noqa: F401
 
 
