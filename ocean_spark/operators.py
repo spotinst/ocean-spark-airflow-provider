@@ -21,7 +21,6 @@ if TYPE_CHECKING:
 
 XCOM_APP_ID_KEY = "app_id"
 XCOM_APP_PAGE_URL_KEY = "app_page_url"
-MAX_FWD_DRIVER_LOGS = 256
 
 # Pyspark 3.4.0 (that allow spark Connect) is only available from Airflow 2.6.2
 if version.parse(__version__) >= version.parse("2.6.2"):
@@ -171,7 +170,7 @@ class OceanSparkOperator(BaseOperator):
                             "Ocean Spark task failure, retrieving Spark driver logs..."
                         )
                         # printing driver logs as-is to preserve formatting
-                        print(hook.get_driver_logs(self.app_id)[-MAX_FWD_DRIVER_LOGS:])
+                        print(hook.get_driver_logs(self.app_id))
                     error_message = "{t} failed with terminal state: {s}".format(
                         t=self.task_id, s=app_state.value
                     )
