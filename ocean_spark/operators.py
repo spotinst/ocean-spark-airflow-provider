@@ -59,6 +59,7 @@ class OceanSparkOperator(BaseOperator):
         on_spark_submit_callback: Optional[
             Callable[[OceanSparkHook, str, "Context"], None]
         ] = None,
+        forward_driver_logs: bool = False,
         **kwargs: Any,
     ):
         """
@@ -83,6 +84,7 @@ class OceanSparkOperator(BaseOperator):
         self.on_spark_submit_callback: Optional[
             Callable[[OceanSparkHook, str, "Context"], None]
         ] = on_spark_submit_callback
+        self.forward_driver_logs = forward_driver_logs
         self.payload: Dict = {}
 
         if self.job_id is None:
@@ -163,6 +165,12 @@ class OceanSparkOperator(BaseOperator):
                     self.log.info("%s completed successfully.", self.task_id)
                     return
                 else:
+                    if self.forward_driver_logs:
+                        self.log.info(
+                            "Ocean Spark task failure, retrieving Spark driver logs..."
+                        )
+                        # printing driver logs as-is to preserve formatting
+                        print(hook.get_driver_logs(self.app_id))
                     error_message = "{t} failed with terminal state: {s}".format(
                         t=self.task_id, s=app_state.value
                     )

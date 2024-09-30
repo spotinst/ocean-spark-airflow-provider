@@ -1,8 +1,7 @@
 import json
 from datetime import timedelta
 from packaging import version
-from typing import Callable, Dict, Any, Tuple
-
+from typing import Callable, Dict, Any, Tuple, Optional
 
 from airflow.hooks.base import BaseHook
 
@@ -24,7 +23,6 @@ GET_CLUSTER_ENDPOINT = (
     requests.get,
     urljoin(API_HOST, "cluster/{cluster_id}"),
 )
-
 SUBMIT_APP_ENDPOINT = (
     requests.post,
     urljoin(API_HOST, "cluster/{cluster_id}/app"),
@@ -36,6 +34,10 @@ GET_APP_ENDPOINT = (
 DELETE_APP_ENDPOINT = (
     requests.delete,
     urljoin(API_HOST, "cluster/{cluster_id}/app/{app_id}"),
+)
+GET_DRIVER_LOGS = (
+    requests.get,
+    urljoin(API_HOST, "cluster/{cluster_id}/app/{app_id}/log/live"),
 )
 
 USER_AGENT_HEADER = {"user-agent": "airflow-{v}".format(v=__version__)}
@@ -72,7 +74,9 @@ class OceanSparkHook(BaseHook):
         self.retry_limit = retry_limit
         self.retry_delay = retry_delay
 
-    def _do_api_call(self, method: Callable, endpoint: str, payload: Dict) -> Dict:
+    def _do_api_call(
+        self, method: Callable, endpoint: str, payload: Optional[Dict]
+    ) -> requests.models.Response:
         """
         Utility function to perform an API call with retries
         :param endpoint_info: Tuple of method and endpoint
@@ -80,9 +84,9 @@ class OceanSparkHook(BaseHook):
         :param payload: Parameters for this API call.
         :type payload: dict
         :return: If the api call returns a OK status code,
-            this function returns the response in JSON. Otherwise,
+            this function returns the response object. Otherwise,
             we throw an AirflowException.
-        :rtype: dict
+        :rtype: requests.models.Response
         """
 
         if payload is None:
@@ -100,7 +104,7 @@ class OceanSparkHook(BaseHook):
                     timeout=self.timeout_seconds,
                 )
                 response.raise_for_status()
-                return response.json()
+                return response
             except (
                 requests_exceptions.ConnectionError,
                 requests_exceptions.Timeout,
@@ -148,7 +152,7 @@ class OceanSparkHook(BaseHook):
             ),
             payload,
         )
-        return response["response"]["items"][0]["id"]
+        return response.json()["response"]["items"][0]["id"]
 
     def get_app(self, app_id: str) -> Dict:
         method, path = GET_APP_ENDPOINT
@@ -161,7 +165,7 @@ class OceanSparkHook(BaseHook):
             ),
             {},
         )
-        return response["response"]["items"][0]
+        return response.json()["response"]["items"][0]
 
     def kill_app(self, app_id: str) -> None:
         method, path = DELETE_APP_ENDPOINT
@@ -181,6 +185,15 @@ class OceanSparkHook(BaseHook):
             f"apps/clusters/{self.cluster_id}/apps/{app_id}/overview&accountId={self.account_id}",
         )
 
+    def get_driver_logs(self, app_id: str) -> str:
+        method, path = GET_DRIVER_LOGS
+        response = self._do_api_call(
+            method,
+            path.format(cluster_id=self.cluster_id, app_id=app_id),
+            payload=None,
+        )
+        return response.content.decode("utf-8")
+
     def test_connection(self) -> Tuple[bool, str]:
         method, path = GET_CLUSTER_ENDPOINT
         try:
@@ -190,7 +203,7 @@ class OceanSparkHook(BaseHook):
                     cluster_id=self.cluster_id,
                 ),
                 {},
-            )
+            ).json()
             if response["response"]["items"][0]["state"] not in [
                 "AVAILABLE",
                 "PROGRESSING",
